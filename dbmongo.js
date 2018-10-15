@@ -1,3 +1,56 @@
+const co = require('./custom/const');
+
+var tables = ['chatroom', 'waitroom', 'gender', 'lasttalk', 'version'];
+var init = function(mongo, callback) {
+	getCollectionNames(mongo, currentTables => {
+		var doneAdd = 0;
+		var needToAdd = [];
+
+		tables.forEach(tableName => {
+			if (currentTables.indexOf(tableName) == -1) {
+				needToAdd.push(tableName);
+			}
+		});
+
+		if (needToAdd.length == 0) {
+			callback();
+			return;
+		}
+
+		needToAdd.forEach(tableName => {
+			initTable(tableName);
+		});
+
+		function initTable(name) {
+			mongo.conn.createCollection(name, function(err, res) {
+				doneAdd++;
+				if (doneAdd == needToAdd.length) {
+					mongo.conn.collection('chatroom').createIndex({id1: 1, id2: 1}, {unique: true});
+					mongo.conn.collection('waitroom').createIndex({uid: 1}, {unique: true});
+					mongo.conn.collection('gender').createIndex({uid: 1}, {unique: true});
+					mongo.conn.collection('lasttalk').createIndex({uid: 1}, {unique: true});
+					mongo.conn.collection('version').updateOne({name: 'version'}, {$set: {name: 'version', value: co.VERSION}}, {upsert: true});
+					callback();
+				}
+			});
+		}
+	});
+}
+
+var dropDatabase = function(mongo) {
+	mongo.conn.dropDatabase();
+}
+
+function getCollectionNames(mongo, callback) {
+	var names = [];
+	mongo.conn.collections(function(e, cols) {
+		cols.forEach(function(col) {
+			names.push(col.collectionName);
+		});
+		callback(names);
+	});
+}
+
 var writeToWaitRoom = function(mongo, id, gender) {
 	var d = new Date();
 	mongo.conn.collection('waitroom').insertOne({uid: +id, gender: gender, time: d.getTime()}, function(err, results, fields) {
@@ -132,57 +185,6 @@ var updateLastTalk = function(mongo, id1, id2) {
 			console.log('__updateLastTalk error: ', err);
 			setTimeout(function() {updateLastTalk(mongo, id1, id2)}, 1000);
 		}
-	});
-}
-
-var tables = ['chatroom', 'waitroom', 'gender', 'lasttalk', 'version'];
-var init = function(mongo, callback) {
-	getCollectionNames(mongo, currentTables => {
-		var doneAdd = 0;
-		var needToAdd = [];
-	
-		tables.forEach(tableName => {
-			if (currentTables.indexOf(tableName) == -1) {
-				needToAdd.push(tableName);
-			}
-		});
-	
-		if (needToAdd.length == 0) {
-			callback();
-			return;
-		}
-	
-		needToAdd.forEach(tableName => {
-			initTable(tableName);
-		});
-	
-		function initTable(name) {
-			mongo.conn.createCollection(name, function(err, res) {
-				doneAdd++;
-				if (doneAdd == needToAdd.length) {
-					mongo.conn.collection('chatroom').createIndex({id1: 1, id2: 1}, {unique: true});
-					mongo.conn.collection('waitroom').createIndex({uid: 1}, {unique: true});
-					mongo.conn.collection('gender').createIndex({uid: 1}, {unique: true});
-					mongo.conn.collection('lasttalk').createIndex({uid: 1}, {unique: true});
-					mongo.conn.collection('version').updateOne({name: 'version'}, {$set: {name: 'version', value: '4.0'}}, {upsert: true});
-					callback();
-				}
-			});
-		}
-	});
-}
-
-var dropDatabase = function(mongo) {
-	mongo.conn.dropDatabase();
-}
-
-function getCollectionNames(mongo, callback) {
-	var names = [];
-	mongo.conn.collections(function(e, cols) {
-		cols.forEach(function(col) {
-			names.push(col.collectionName);
-		});
-		callback(names);
 	});
 }
 

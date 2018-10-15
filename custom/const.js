@@ -30,5 +30,6 @@ module.exports = {
 
 	// ADMIN
 	ADMIN_PASSWORD : '', // password để login vào trang admin
-	DEV_ID : 0
+	DEV_ID : 0,
+	VERSION : '4.1'
 };

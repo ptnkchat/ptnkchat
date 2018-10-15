@@ -57,7 +57,7 @@ app.use(cors());
 
 // index
 app.get('/', function(req, res) {
-	res.send('ptnkchat is running!');
+	res.send(co.APP_NAME + ' is up');
 });
 
 // xử lí tin nhắn
@@ -85,7 +85,7 @@ app.post('/webhook/', function(req, res) {
 			else if (event.message.text)
 				text = event.message.text;
 
-			if (text === 'switchmaintaining' && sender == co.DEV_ID) {
+			if (text === la.KEYWORD_MAINTAIN && sender == co.DEV_ID) {
 				MAINTAINING = !MAINTAINING;
 				return;
 			}
@@ -214,7 +214,7 @@ var findPair = function(id, mygender) {
 			var target = list[i];
 			var target_gender = genderlist[i];
 			// kiểm tra xem có phải họ vừa chat xong ko?
-			if (tools.findInLastTalk(mongo, id, target)) {
+			if (tools.findInLastTalk(mongo, id, target) || tools.findInLastTalk(mongo, target, id)) {
 				// nếu có thì next
 				continue;
 			} else {

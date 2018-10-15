@@ -163,14 +163,6 @@ var fetchToCache = function(mongo, callback) {
 	});
 }
 
-var getStats = function() {
-	return {
-		waitroom: waitroom.size(),
-		pair1: pair1.size(),
-		pair2: pair2.size()
-	}
-}
-
 var clear = function() {
 	waitroom.clear();
 	pair1.clear();
@@ -190,7 +182,6 @@ module.exports = {
 	lt_find: lt_find,
 	lt_write: lt_write,
 	fetchToCache: fetchToCache,
-	getStats: getStats,
 	clear: clear
 };
 

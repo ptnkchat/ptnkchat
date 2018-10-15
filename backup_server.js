@@ -3,8 +3,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
-const app = express();
+const la = require('./custom/lang');
 const co = require('./custom/const');
+const app = express();
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -24,7 +25,7 @@ app.post('/webhook/', function(req, res) {
 			res.sendStatus(200);
 			return;
 		}
-		sendTextMessage(sender, '[BOT] Bot đang được cập nhật. Tin nhắn của bạn chưa được xử lý. Bạn hãy thử lại sau 1 phút nữa nhé.');
+		sendTextMessage(sender, la.ERR_SERVER);
 	}
 	res.sendStatus(200);
 });

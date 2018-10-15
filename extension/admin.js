@@ -66,10 +66,17 @@ var init = function(app, toolsObj, sqlconnObj) {
 
 			tools.getListChatRoom(sqlconn, function(listt) {
 				out.chatroom.ids = listt;
-				out.stat = tools.getStats();
 
 				pusage.stat(process.pid, function(err, stat) {
-					var pstat = 'CPU: ' + stat.cpu.toFixed(1) + '%, Mem: ' + ((+stat.memory) / 1024 / 1024).toFixed(1) + 'MB';
+					var sec = Math.floor(process.uptime());
+					var d   = Math.floor(sec / (24 * 60 * 60));
+					sec    -= d * (24 * 60 * 60);
+					var h   = Math.floor(sec / (60 * 60));
+					sec    -= h * (60 * 60);
+					var m   = Math.floor(sec / (60));
+					sec    -= m * (60);
+					var pstat = 'CPU: ' + stat.cpu.toFixed(1) + '%, Mem: ' + (stat.memory / 1024 / 1024).toFixed(1) + 'MB, Uptime: '
+						+ ((0 < d) ? (d + ' day ') : '') + h + 'h ' + m + 'm ' + sec + 's';
 					out.pstat = pstat;
 					res.send(JSON.stringify(out));
 				});
@@ -107,7 +114,7 @@ var init = function(app, toolsObj, sqlconnObj) {
 	});
 
 	app.post('/admin/version/', function(req, res) {
-		res.send('4.0');
+		res.send(co.VERSION);
 	});
 }
 

@@ -36,8 +36,10 @@ module.exports = {
 	KEYWORD_HELP : 'trogiup',
 	KEYWORD_CAT : 'meow',
 	KEYWORD_DOG : 'gauw',
+	KEYWORD_MAINTAIN : 'maintain',
 
-	ERR_200: '[BOT] Bạn chat không thể nhận tin nhắn do đã xóa inbox hoặc block page.',
-	ERR_10: '[BOT] Bạn chat không thể nhận tin nhắn do 2 bạn không nói chuyện gì trong vòng 24h. Gửi ketthuc để kết thúc chat.',
-	ERR_TOO_LONG: '[BOT] Lỗi: Tin nhắn quá dài (nhiều hơn 640 ký tự). Hãy chia nhỏ tin nhắn và gửi dần.'
+	ERR_SERVER : '[BOT] Có lỗi xảy ra với chatbot. Tin nhắn của bạn chưa được xử lý. Bạn hãy thử lại sau 1 phút nữa nhé.',
+	ERR_200 : '[BOT] Bạn chat không thể nhận tin nhắn do đã xóa inbox hoặc block page.',
+	ERR_10 : '[BOT] Bạn chat không thể nhận tin nhắn do 2 bạn không nói chuyện gì trong vòng 24h. Gửi ketthuc để kết thúc chat.',
+	ERR_TOO_LONG : '[BOT] Lỗi: Tin nhắn quá dài (nhiều hơn 640 ký tự). Hãy chia nhỏ tin nhắn và gửi dần.'
 };

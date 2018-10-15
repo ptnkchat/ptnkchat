@@ -97,12 +97,6 @@ module.exports = {
 		cache.lt_write(id2, id1);
 	},
 
-	getStats: function() {
-		var temp = cache.getStats();
-		temp.cacheReady = cacheReady;
-		return temp;
-	},
-
 	dropDatabase: function() {
 		dbmongo.dropDatabase();
 		cache.clear();
