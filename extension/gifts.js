@@ -1,53 +1,51 @@
-var MAX_CAT_IMG = 10229;
-var MAX_DOG_IMG = 5250;
+const MAX_CAT_IMG = 10229;
+const MAX_DOG_IMG = 5250;
 const facebook = require('../facebook');
 
 function sendCatPic(id, id2, notInChat) {
-	getCatData(function(data) {
+	getCatData(data => {
 		if (notInChat) data['quick_replies'] = facebook.quickbtns;
-		//else data["quick_replies"] = facebook.quickbtns_mini;
 		facebook.sendFacebookApi(id, id, data);
 		if (id2 != null) facebook.sendFacebookApi(id2, id2, data);
 	});
 }
 
 function sendDogPic(id, id2, notInChat) {
-	getDogData(function(data) {
+	getDogData(data => {
 		if (notInChat) data['quick_replies'] = facebook.quickbtns;
-		//else data["quick_replies"] = facebook.quickbtns_mini;
 		facebook.sendFacebookApi(id, id, data);
 		if (id2 != null) facebook.sendFacebookApi(id2, id2, data);
 	});
 }
 
-var getCatData = function(callback) {
+var getCatData = callback => {
 	var img = randomIntFromInterval(1, MAX_CAT_IMG);
 	var url = '';
 	if (img <= 9360) {
-		url = 'nuimeow.github.io/jpg/' + img + '.jpg';
+		url = `nuimeow.github.io/jpg/${img}.jpg`;
 	} else {
-		url = 'nuimeow.github.io/gif/' + img + '.gif';
+		url = `nuimeow.github.io/gif/${img}.gif`;
 	}
 	callback({
 		"attachment": {"type": 'image',
 		"payload": {
-			"url": 'https://' + url
+			"url": `https://${url}`
 		}}
 	});
 }
 
-var getDogData = function(callback) {
+var getDogData = callback => {
 	var img = randomIntFromInterval(1, MAX_DOG_IMG);
 	var url = '';
 	if (img <= 5169) {
-		url = 'nuimeow.github.io/dog/jpg/' + img + '.jpg';
+		url = `nuimeow.github.io/dog/jpg/${img}.jpg`;
 	} else {
-		url = 'nuimeow.github.io/dog/gif/' + img + '.gif';
+		url = `nuimeow.github.io/dog/jpg/${img}.gif`;
 	}
 	callback({
 		"attachment": {"type": 'image',
 		"payload": {
-			"url": 'https://' + url
+			"url": `https://${url}`
 		}}
 	});
 }

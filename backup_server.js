@@ -12,26 +12,25 @@ app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
 	res.send('');
 });
 
-app.post('/webhook/', function(req, res) {
-	var messaging_events = req.body.entry[0].messaging;
+app.post('/webhook/', (req, res) => {
+	res.sendStatus(200);
+	let messaging_events = req.body.entry[0].messaging;
 	for (let i = 0; i < messaging_events.length; i++) {
-		var event = req.body.entry[0].messaging[i]
-		var sender = event.sender.id
+		let event = req.body.entry[0].messaging[i]
+		let sender = event.sender.id
 		if (event.read || (event.message && event.message.delivery)) {
-			res.sendStatus(200);
 			return;
 		}
 		sendTextMessage(sender, la.ERR_SERVER);
 	}
-	res.sendStatus(200);
 });
 
 function sendTextMessage(receiver, text) {
-	let messageData = {text:text}
+	let messageData = {text: text}
 
 	request({
 		url: 'http://api.chatbot.ngxson.com/graph/me/messages',
@@ -41,21 +40,21 @@ function sendTextMessage(receiver, text) {
 			recipient: {id: receiver},
 			message: messageData,
 		}
-	}, function(error, response, body) {
+	}, (error, response, body) => {
 		if (error) {
-			console.log('Error sending messages: ', error)
+			console.log(`Error sending messages: ${JSON.stringify(error)}`);
 		} else if (response.body.error) {
-			console.log('Error: ', response.body.error)
+			console.log(`Error: ${JSON.stringify(response.body.error)}`);
 		}
 	})
 }
 
 // spin spin sugar
-app.listen(app.get('port'), function() {
+app.listen(app.get('port'), () => {
 	console.log('running on port', app.get('port'))
 })
 
 // auto exit after 10 secs
-setTimeout(function() {
+setTimeout(() => {
 	process.exit(1);
 }, 10000);

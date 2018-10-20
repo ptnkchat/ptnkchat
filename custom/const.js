@@ -1,6 +1,4 @@
 module.exports = {
-	DEBUG : false,
-
 	// NUICHATBOT TOKEN
 	NCB_TOKEN : '',
 
@@ -31,5 +29,5 @@ module.exports = {
 	// ADMIN
 	ADMIN_PASSWORD : '', // password để login vào trang admin
 	DEV_ID : 0,
-	VERSION : '4.1'
+	VERSION : '4.1.1'
 };

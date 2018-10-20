@@ -1,4 +1,6 @@
-var HashTable = require('hashtable');
+'use strict';
+
+const HashTable = require('hashtable');
 
 var waitroom = new HashTable();
 waitroom.max_load_factor(10);
@@ -32,11 +34,11 @@ var Partner2 = function(partner, mygender, partner_gender, genderok, starttime) 
 	this.starttime = starttime;
 }
 
-var wr_write = function(id, gender, time) {
+var wr_write = (id, gender, time) => {
 	waitroom.put('' + id, {gender: gender, time: time});
 }
 
-var wr_find = function(id, callback) {
+var wr_find = (id, callback) => {
 	if (waitroom.has('' + id)) {
 		callback(true);
 	} else {
@@ -44,49 +46,44 @@ var wr_find = function(id, callback) {
 	}
 }
 
-var wr_del = function(id) {
+var wr_del = id => {
 	waitroom.remove('' + id);
 }
 
-var wr_read = function(callback) {
-	var ids = []; var genders = []; var time = [];
-	var db = shuffle(waitroom.keys());
-	/*db.sort(function(a,b) {
-		if (waitroom[a].time > waitroom[b].time) return 1;
-		if (waitroom[a].time < waitroom[b].time) return -1;
-		return 0;
-	});*/
-	for (var i = 0; i < db.length; i++) {
+var wr_read = callback => {
+	let ids = []; let genders = []; let time = [];
+	let db = shuffle(waitroom.keys());
+	for (let i = 0; i < db.length; i++) {
 		ids.push(db[i]);
-		var temp = waitroom.get(db[i]);
+		let temp = waitroom.get(db[i]);
 		genders.push(temp.gender);
 		time.push(temp.time);
 	}
 	callback(ids, genders, time);
 }
 
-var cr_write = function(id1, id2, gender1, gender2, isWantedGender, starttime) {
+var cr_write = (id1, id2, gender1, gender2, isWantedGender, starttime) => {
 	var genderok = isWantedGender ? 1 : 0;
 	pair1.put('' + id1, new Partner1(id2, gender1, gender2, genderok, starttime));
 	pair2.put('' + id2, new Partner2(id1, gender2, gender1, genderok, starttime));
 }
 
-var cr_find = function(id, callback) {
+var cr_find = (id, callback) => {
 	id = '' + id;
 	var temp = findInCR(id, pair1, 1);
 	if (temp != null) {
-		callback(temp[0], temp[1], temp[2], temp[3]);
+		callback(temp[0], temp[1], temp[2]);
 	} else {
 		temp = findInCR(id, pair2, 2);
 		if (temp != null) {
-			callback(temp[0], temp[1], temp[2], temp[3]);
+			callback(temp[0], temp[1], temp[2]);
 		} else {
-			callback(null, false, 1, {});
+			callback(null, 1, {});
 		}
 	}
 }
 
-var cr_del = function(id, callback) {
+var cr_del = (id, callback) => {
 	if (pair1.has('' + id)) {
 		var temp = pair1.get('' + id);
 		pair2.remove(temp.partner);
@@ -96,19 +93,19 @@ var cr_del = function(id, callback) {
 		pair1.remove(temp.partner);
 		pair2.remove('' + id);
 	}
-	callback(callback);
+	callback();
 }
 
 function findInCR(id, cr, number) {
 	if (cr.has(id)) {
 		var temp = cr.get(id);
-		return [temp.partner, false, number, temp];
+		return [temp.partner, number, temp];
 	} else {
 		return null;
 	}
 }
 
-var cr_read = function(callback) {
+var cr_read = callback => {
 	var ret = [];
 	var db = pair1.keys();
 	for (var i = 0; i < db.length; i++) {
@@ -118,40 +115,40 @@ var cr_read = function(callback) {
 	callback(ret);
 }
 
-var lt_find = function(id1, id2) {
+var lt_find = (id1, id2) => {
 	id1 = id1 + '' ; id2 = id2 + '';
 	if (lasttalk.has(id1)) {
 		return (lasttalk.get(id1) === id2);
 	}
 }
 
-var lt_write = function(id1, id2) {
+var lt_write = (id1, id2) => {
 	lasttalk.put('' + id1, '' + id2);
 }
 
-var fetchToCache = function(mongo, callback) {
-	mongo.conn.collection('chatroom').find().toArray(function(err, results) {
+var fetchToCache = (mongo, callback) => {
+	mongo.conn.collection('chatroom').find().toArray((err, results) => {
 		if (err) {
 			console.log(err);
 			callback(false);
 		} else {
-			results.forEach(function(item, index) {
+			results.forEach((item, index) => {
 				cr_write(item.id1, item.id2, item.gender1, item.gender2, item.genderok, item.starttime);
 			});
-			mongo.conn.collection('waitroom').find().toArray(function(err1, results1) {
+			mongo.conn.collection('waitroom').find().toArray((err1, results1) => {
 				if (err1) {
 					console.log(err1);
 					callback(false);
 				} else {
-					results1.forEach(function(item) {
+					results1.forEach(item => {
 						wr_write(item.uid, item.gender, item.time);
 					});
-					mongo.conn.collection('lasttalk').find().toArray(function(err2, results2) {
+					mongo.conn.collection('lasttalk').find().toArray((err2, results2) => {
 						if (err2) {
 							console.log(err2);
 							callback(false);
 						} else {
-							results2.forEach(function(item) {
+							results2.forEach(item => {
 								lt_write(item.uid, item.partner);
 							});
 							callback(true);
@@ -163,7 +160,7 @@ var fetchToCache = function(mongo, callback) {
 	});
 }
 
-var clear = function() {
+var clear = () => {
 	waitroom.clear();
 	pair1.clear();
 	pair2.clear();

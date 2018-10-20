@@ -5,10 +5,10 @@ var tools;
 var sqlconn;
 var sendButtonMsg;
 
-var everyMinute = function() {
+var everyMinute = () => {
 	var d = new Date();
-	tools.getListWaitRoom(sqlconn, function(list, genderlist, timelist) {
-		timelist.forEach(function(time, i) {
+	tools.getListWaitRoom(sqlconn, (list, genderlist, timelist) => {
+		timelist.forEach((time, i) => {
 			if (d.getTime() - time > co.MAX_WAIT_TIME_MINUTES * 60000) {
 				sendButtonMsg(list[i], la.END_CHAT_FORCE, true, true);
 				tools.deleteFromWaitRoom(sqlconn, list[i]);
@@ -17,7 +17,7 @@ var everyMinute = function() {
 	})
 }
 
-var init = function(toolsObj, sqlconnObj, sendButtonMsgObj) {
+var init = (toolsObj, sqlconnObj, sendButtonMsgObj) => {
 	if (co.MAX_WAIT_TIME_MINUTES > 0) {
 		tools = toolsObj;
 		sqlconn = sqlconnObj;

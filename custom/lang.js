@@ -1,5 +1,5 @@
 module.exports = {
-	BAO_TRI : "[BOT] Server hiện đang bảo trì. Mình sẽ sớm kết nối lại và thông báo cho các bạn.",
+	BAO_TRI : "[BOT] Server hiện đang bảo trì...",
 	FIRST_COME : '[BOT] Chào mừng bạn đến với PTNK Chatible. Trước khi bắt đầu, hãy chắc chắn rằng bạn đã chọn đúng giới tính người muốn chat cùng.\n\nẤn trợ giúp (hoặc gửi trogiup) để xem thêm.',
 	HUONG_DAN : "[BOT] Gửi batdau hoặc bấm vào nút để tìm bạn chat.",
 	BATDAU_OKAY : "[BOT] OK! Chúng mình sẽ thông báo khi tìm được.",
@@ -10,7 +10,7 @@ module.exports = {
 	END_CHAT : "[BOT] End chat!\nGửi batdau hoặc bấm vào nút để tìm bạn chat.",
 	END_CHAT_PARTNER : "[BOT] Bạn ý đã ngắt kết nối :(\nGửi batdau hoặc bấm vào nút để tìm bạn chat.",
 	END_CHAT_FORCE : "[BOT] Hiện tại không có ai đang online cả. Bạn hãy thử lại sau nhé :(",
-	ERR_UNKNOWN : "[BOT] Server xảy ra lỗi nhưng ko nghiêm trọng lắm\nHãy gửi ketthuc để thoát ra và thử lại",
+	ERR_UNKNOWN : "[BOT] Server xảy ra lỗi nhưng không nghiêm trọng lắm\nHãy gửi ketthuc để thoát ra và thử lại",
 	ERR_ATTACHMENT : "[BOT] Lỗi: Chúng mình chưa hỗ trợ gửi dạng dữ liệu này",
 	ATTACHMENT_FILE : "[BOT] Bạn ý đã gửi 1 tệp tin: ",
 	ATTACHMENT_LINK : "[BOT] Bạn ý đã gửi 1 đường link: ",
@@ -21,13 +21,13 @@ module.exports = {
 	GENDER_WRITE_WARN : "\n\nLưu ý: Tùy chọn này chỉ có tác dụng với PHẦN LỚN các cuộc nói chuyện.",
 	GENDER_ARR : ['không quan tâm', 'nam', 'nữ'],
 	HELP_TXT : "[BOT] Danh sách các lệnh:\n" +
-				"- batdau: Bắt đầu tìm bạn chat\n"+
-				"- ketthuc: Kết thúc chat\n"+
-				"- trogiup: Xem trợ giúp\n"+
-				"- meow: Xem ảnh mèo\n"+
-				"- gauw: Xem ảnh cún\n"+
-				"\nCác lệnh có thể dùng khi đang không chat:\n"+
-				"- timnu: Tìm nữ chat cùng\n"+
+				"- batdau: Bắt đầu tìm bạn chat\n" +
+				"- ketthuc: Kết thúc chat\n" +
+				"- trogiup: Xem trợ giúp\n" +
+				"- meow: Xem ảnh mèo\n" +
+				"- gauw: Xem ảnh cún\n" +
+				"\nCác lệnh có thể dùng khi đang không chat:\n" +
+				"- timnu: Tìm nữ chat cùng\n" +
 				"- timnam: Tìm nam chat cùng",
 
 	KEYWORD_BATDAU : 'batdau',

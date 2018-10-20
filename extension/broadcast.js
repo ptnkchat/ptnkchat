@@ -1,13 +1,13 @@
 /*
  * Module gửi broadcast_messages
-sendBroadcast(access_token, text, function(success) {
+sendBroadcast(access_token, text, success => {
 	success = true nếu gửi thành công
 	success = false nếu gửi lỗi
 })
  */
 var request = require('request');
 
-var sendBroadcast = function(access_token, text, callback) {
+var sendBroadcast = (access_token, text, callback) => {
 	request({
 		url: 'http://api.chatbot.ngxson.com/graph/me/message_creatives?access_token=' + access_token,
 		method: 'POST',
@@ -16,8 +16,11 @@ var sendBroadcast = function(access_token, text, callback) {
 				"text": text
 			}]
 		}
-	}, (err, res,body) => {
-		if (err) {callback(false); return;}
+	}, (err, res, body) => {
+		if (err) {
+			callback(false);
+			return;
+		}
 		if (res && res.body && res.body['message_creative_id']) {
 			handleCreativeId(access_token, res.body['message_creative_id'], callback);
 		} else {
@@ -27,7 +30,7 @@ var sendBroadcast = function(access_token, text, callback) {
 	});
 };
 
-var send = function(access_token, message,custom_label_id) {
+var send = (access_token, message, custom_label_id) => {
 	var promise = new Promise((resolve, reject) => {
 		getCreativeId(access_token, message).then(creative_id => {
 			if (!creative_id) {
@@ -62,7 +65,7 @@ var send = function(access_token, message,custom_label_id) {
 	return promise;
 };
 
-var getCreativeId = function(access_token,message){
+var getCreativeId = (access_token, message) => {
 	var promise = new Promise((resolve, reject) => {
 		request({
 			url: 'http://api.chatbot.ngxson.com/graph/me/message_creatives?access_token=' + access_token,
@@ -71,11 +74,11 @@ var getCreativeId = function(access_token,message){
 				"messages": [message]
 			}
 		}, (err, res, body) => {
-			if(err) {
+			if (err) {
 				reject();
 				return;
 			}
-			if(res && res.body && res.body['message_creative_id']) {
+			if (res && res.body && res.body['message_creative_id']) {
 				resolve(res.body['message_creative_id']);
 			} else {
 				console.log(JSON.stringify(res.body));

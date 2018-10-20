@@ -1,16 +1,15 @@
+'use strict';
+
 const dbmongo = require('./dbmongo');
 const cache = require('./dbcache');
 var cacheReady = false;
-var mongo_private = null;
 
-var init = function(mongo_) {
-	if (mongo_) mongo_private = mongo_;
-	cache.fetchToCache(mongo_private, function(ok) {
+var init = (mongo) => {
+	cache.fetchToCache(mongo, ok => {
 		if (ok) {
 			cacheReady = true;
-			delete mongo_private;
 		} else {
-			setTimeout(init, 10000);
+			setTimeout(() => init(mongo), 1000);
 		}
 	})
 }
@@ -20,13 +19,13 @@ module.exports = {
 	initMongo: dbmongo.init,
 	cacheReady: cacheReady,
 
-	writeToWaitRoom: function(mongo, id, gender) {
+	writeToWaitRoom: (mongo, id, gender) => {
 		dbmongo.writeToWaitRoom(mongo, id, gender);
-		var d = new Date();
+		let d = new Date();
 		cache.wr_write(id, gender, d.getTime());
 	},
 
-	findInWaitRoom: function(mongo, id, callback) {
+	findInWaitRoom: (mongo, id, callback) => {
 		if (cacheReady) {
 			cache.wr_find(id, callback)
 		} else {
@@ -34,12 +33,12 @@ module.exports = {
 		}
 	},
 
-	deleteFromWaitRoom: function(mongo, id) {
+	deleteFromWaitRoom: (mongo, id) => {
 		dbmongo.deleteFromWaitRoom(mongo, id);
 		cache.wr_del(id);
 	},
 
-	getListWaitRoom: function(mongo, callback) {
+	getListWaitRoom: (mongo, callback) => {
 		if (cacheReady) {
 			cache.wr_read(callback);
 		} else {
@@ -48,14 +47,14 @@ module.exports = {
 	},
 
 	// chatroom tools
-	writeToChatRoom: function(mongo, id1, id2, gender1, gender2, isWantedGender) {
+	writeToChatRoom: (mongo, id1, id2, gender1, gender2, isWantedGender) => {
 		dbmongo.writeToChatRoom(mongo, id1, id2, gender1, gender2, isWantedGender);
-		var d = new Date();
+		let d = new Date();
 		cache.cr_write(id1, id2, gender1, gender2, isWantedGender, d.getTime());
 	},
 
-	// callback(id, haveToReview, role, data);
-	findPartnerChatRoom: function(mongo, id, callback) {
+	// callback(id, role, data);
+	findPartnerChatRoom: (mongo, id, callback) => {
 		if (cacheReady) {
 			cache.cr_find(id, callback)
 		} else {
@@ -63,17 +62,17 @@ module.exports = {
 		}
 	},
 
-	deleteFromChatRoom: function(mongo, id, callback) {
+	deleteFromChatRoom: (mongo, id, callback) => {
 		if (cacheReady) {
-			dbmongo.deleteFromChatRoom(mongo, id, function(){});
+			dbmongo.deleteFromChatRoom(mongo, id, () => {});
 			cache.cr_del(id, callback);
 		} else {
 			dbmongo.deleteFromChatRoom(mongo, id, callback);
-			cache.cr_del(id, function(){});
+			cache.cr_del(id, () => {});
 		}
 	},
 
-	getListChatRoom: function(mongo, callback) {
+	getListChatRoom: (mongo, callback) => {
 		if (cacheReady) {
 			cache.cr_read(callback);
 		} else {
@@ -82,7 +81,7 @@ module.exports = {
 	},
 
 	// LAST TALK
-	findInLastTalk: function(mongo, id1, id2) {
+	findInLastTalk: (mongo, id1, id2) => {
 		if (cacheReady) {
 			return cache.lt_find(id1, id2);
 		} else {
@@ -90,14 +89,14 @@ module.exports = {
 		}
 	},
 
-	updateLastTalk: function(mongo, id1, id2) {
+	updateLastTalk: (mongo, id1, id2) => {
 		dbmongo.updateLastTalk(mongo, id1, id2);
 		dbmongo.updateLastTalk(mongo, id2, id1);
 		cache.lt_write(id1, id2);
 		cache.lt_write(id2, id1);
 	},
 
-	dropDatabase: function() {
+	dropDatabase: () => {
 		dbmongo.dropDatabase();
 		cache.clear();
 	}

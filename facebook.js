@@ -1,5 +1,6 @@
-var http = require('http');
-var co = require('./custom/const');
+'use strict';
+
+const co = require('./custom/const');
 const la = require('./custom/lang');
 const request = require('request');
 var heroku = null;
@@ -9,18 +10,18 @@ if (co.HEROKU_API_KEY) {
     heroku = new Heroku({token: co.HEROKU_API_KEY});
 }
 
-exports.getFbData = function(id, callback) {
+exports.getFbData = (id, callback) => {
 	request({
 		url: 'http://api.chatbot.ngxson.com/graph/' + id,
 		qs: {access_token: co.NCB_TOKEN},
 		method: 'GET'
-		}, function(error, response, body) {
+		}, (error, response, body) => {
 			if (error) callback('{error: true}');
 			else callback(body);
 		})
 }
 
-exports.setupFBApi = function() {
+exports.setupFBApi = () => {
 	request({
 		url: 'http://api.chatbot.ngxson.com/graph/me/messenger_profile',
 		qs: {access_token: co.NCB_TOKEN},
@@ -31,7 +32,7 @@ exports.setupFBApi = function() {
 			},
 			"persistent_menu": exports.persistent_menu
 		}
-	}, function(error, response, body) {console.log('set_persistent_menu: ' + JSON.stringify(response.body))})
+	}, (error, response, body) => console.log(`set_persistent_menu: ${JSON.stringify(response.body)}`))
 }
 
 exports.persistent_menu = [
@@ -44,11 +45,11 @@ exports.persistent_menu = [
 				"type": "nested",
 				"call_to_actions": [
 					{
-						"title": "ảnh mèo",
+						"title": "meow",
 						"type": "postback",
 						"payload": la.KEYWORD_CAT
 					},{
-						"title": "ảnh cún",
+						"title": "gauw",
 						"type": "postback",
 						"payload": la.KEYWORD_DOG
 					},{
@@ -118,7 +119,7 @@ exports.quickbtns_mini = [
 	}
 ];
 
-var sendFacebookApi = function (sender, receiver, messageData, dontSendErr = false, callback = null) {
+var sendFacebookApi = (sender, receiver, messageData, dontSendErr = false, callback = null) => {
 	if (messageData.text || messageData.attachment) {
 		if (messageData.text && messageData.text.length > 639) {
 			sendFacebookApi(sender, sender, {text: la.ERR_TOO_LONG}, null, true);
@@ -132,31 +133,32 @@ var sendFacebookApi = function (sender, receiver, messageData, dontSendErr = fal
 			json: {
 				recipient: {id: receiver},
 				message: messageData,
-				messaging_type: "RESPONSE"
+				messaging_type: "MESSAGE_TAG",
+				tag: "NON_PROMOTIONAL_SUBSCRIPTION"
 			}
-		}, function(error, response, body) {
+		}, (error, response, body) => {
 			if (error) {
-				console.log('Error sending messages: ', error)
+				console.log(`Error sending messages: ${JSON.stringify(error)}`)
 			} else if (response.body.error && response.body.error.code && !dontSendErr) {
-				console.log(sender + ' vs ' + receiver + ' Error: ', response.body.error);
+				console.log(`${sender} vs ${receiver} error: ${JSON.stringify(response.body.error)}`);
 				if (response.body.error.code == 200 && sender != receiver)
 					sendFacebookApi(sender, sender, {text: la.ERR_200}, null, true);
 				else if (response.body.error.code == 230 && sender != receiver)
 					sendFacebookApi(sender, sender, {text: la.ERR_230}, null, true);
 				else if (co.HEROKU_API_KEY && response.body.error.code == 5)
-					heroku.delete('/apps/' + co.APP_NAME + '/dynos/web.1', function (err, app) {});
+					heroku.delete(`/apps/${co.APP_NAME}/dynos/web.1`, (err, app) => {});
 			}
 		})
 	} else {
 		console.log('__sendMessage: err: neither text nor attachment');
 		console.log(messageData);
 	}
-	if(callback && typeof callback === 'function')
+	if (callback && typeof callback === 'function')
 		callback();
 }
 exports.sendFacebookApi = sendFacebookApi;
 
-exports.sendSeenIndicator = function (receiver) {
+exports.sendSeenIndicator = receiver => {
 	request({
 		url: 'http://api.chatbot.ngxson.com/graph/me/messages',
 		qs: {access_token: co.NCB_TOKEN},
@@ -164,14 +166,15 @@ exports.sendSeenIndicator = function (receiver) {
 		json: {
 			recipient: {id: receiver},
 			sender_action: "mark_seen",
-			messaging_type: "RESPONSE"
+			messaging_type: "MESSAGE_TAG",
+			tag: "NON_PROMOTIONAL_SUBSCRIPTION"
 		}
-	}, function(error, response, body) {})
+	}, (error, response, body) => {})
 }
 
-exports.sendImageVideoReport = function(msg_data, sender, receiver) {
+exports.sendImageVideoReport = (msg_data, sender, receiver) => {
 	if (msg_data.sticker_id || !msg_data.mid) return;
-	var type = 'ảnh';
+	let type = 'ảnh';
 	if (msg_data.attachments[0].type == 'video') type = 'video';
 	else if (msg_data.attachments[0].type == 'audio') return;
 	sendFacebookApi(sender, receiver, {
