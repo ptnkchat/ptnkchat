@@ -1,6 +1,6 @@
 const MAX_CAT_IMG = 10229;
 const MAX_DOG_IMG = 5250;
-const facebook = require('../facebook');
+const facebook = require('../api/facebook');
 
 function sendCatPic(id, id2, notInChat) {
 	getCatData(data => {

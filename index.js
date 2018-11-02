@@ -1,3 +1,24 @@
+/*
+	PTNK Chatible
+	Copyright (C) 2018  Le Bao Hiep (@hieplpvip)
+	Original credit goes to Nguyen Xuan Son (a.k.a Nui or @ngxson)
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	                        FROM PTNK WITH LOVE
+	                              <3 LDQA
+*/
 'use strict';
 
 // core
@@ -14,10 +35,11 @@ const assert = require('assert');
 const la = require('./custom/lang');
 const co = require('./custom/const');
 
-// parts
-const tools = require('./dbtools');
-const gendertool = require('./gender');
-const facebook = require('./facebook');
+// database
+const tools = require('./db/dbtools');
+
+// facebook api
+const facebook = require('./api/facebook');
 
 // extensions
 const gifts = require('./extension/gifts');
@@ -26,10 +48,16 @@ const admin = require('./extension/admin');
 const cronjob = require('./extension/cronjob');
 
 var sendFacebookApi = facebook.sendFacebookApi;
+var sendButtonMsg = facebook.sendButtonMsg;
 
 var MAINTAINING = false;
 
 var mongo = {}
+
+function initChatbot() {
+	admin.init(app, tools, mongo);
+	cronjob.init(tools, mongo, sendButtonMsg);
+}
 
 function connectToMongo() {
 	MongoClient.connect(co.DB_CONFIG_URI.replace('/test', '/' + co.DB_NAME), {useNewUrlParser: true}, (err, mdb) => {
@@ -49,9 +77,16 @@ connectToMongo();
 
 facebook.setupFBApi();
 
+// set port
 app.set('port', (process.env.PORT || 5000));
+
+// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({limit: '5mb', extended: false}));
+
+// parse application/json
 app.use(bodyParser.json({limit: '5mb'}));
+
+// enable cors
 app.use(cors());
 
 // index
@@ -59,17 +94,15 @@ app.get('/', (req, res) => {
 	res.send(`${co.APP_NAME} is up`);
 });
 
-// xử lí tin nhắn
+// process messaging event
 app.post('/webhook/', (req, res) => {
 	let messaging_events = req.body.entry[0].messaging;
 	res.sendStatus(200);
 	for (let i = 0; i < messaging_events.length; i++) {
 		let event = messaging_events[i]
-		//console.log(event);
 		if (event.read) event.message = {
-			text: ""
+			text: ''
 		};
-		//if (event.message.attachments) console.log(event.message.attachments[0]);
 		let sender = event.sender.id;
 		if (event.postback)
 			if (event.postback.payload) event['message'] = {
@@ -109,11 +142,23 @@ app.post('/webhook/', (req, res) => {
 					// ko ở trong CR lẫn WR
 					if (!waitstate && sender2 == null) {
 						if (command === la.KEYWORD_BATDAU) {
-							gendertool.getGender(mongo, sender, genderid => {
+							getGender(sender, genderid => {
 								findPair(sender, genderid);
-							}, facebook);
+							});
 						} else if (command.startsWith(la.KEYWORD_GENDER)) {
-							gendertool.setGender(mongo, sender, command, genderWriteCallback);
+							setGender(sender, command, (ret, id) => {
+								switch (ret) {
+									case -2:
+										sendTextMessage(id, la.DATABASE_ERR);
+										break;
+									case -1:
+										sendButtonMsg(id, la.GENDER_ERR, false, true);
+										break;
+									default:
+										sendTextMessage(id, la.GENDER_WRITE_OK + la.GENDER_ARR[ret] + la.GENDER_WRITE_WARN);
+										findPair(id, ret);
+								}
+							});
 						} else if (command === la.KEYWORD_HELP) {
 							sendButtonMsg(sender, la.HELP_TXT, true, false);
 						} else if (command === la.KEYWORD_CAT) {
@@ -177,24 +222,56 @@ app.post('/webhook/', (req, res) => {
 	}
 });
 
-function processEndChat(id1, id2) {
-	tools.deleteFromChatRoom(mongo, id1, () => {
-		sendButtonMsg(id1, la.END_CHAT, true, true, true);
-		sendButtonMsg(id2, la.END_CHAT_PARTNER, true, true, true);
-	});
-}
-
-function genderWriteCallback(ret, id) {
-	switch (ret) {
-		case -2:
-			sendTextMessage(id, la.SQL_ERR);
-			break;
-		case -1:
-			sendButtonMsg(id, la.GENDER_ERR, false, true);
-			break;
-		default:
-			sendTextMessage(id, la.GENDER_WRITE_OK + la.GENDER_ARR[ret] + la.GENDER_WRITE_WARN, () => findPair(id, ret));
+function setGender(id, gender_str, callback) {
+	let genderid = 0;
+	if (gender_str == la.KEYWORD_GENDER + 'nam') {
+		genderid = 1;
+	} else if (gender_str == la.KEYWORD_GENDER + 'nu') {
+		genderid = 2;
+	} else if (gender_str == la.KEYWORD_GENDER + 'khong') {
+		genderid = 0;
+	} else {
+		callback(-1, id); // no valid value
+		return;
 	}
+	mongo.conn.collection('gender').updateOne({uid: id}, {$set: {uid: id, gender: genderid}},
+		{upsert: true}, (error, results, fields) => {
+		if (error) {
+			callback(-2, id); // ERR writing to db
+			console.log(error);
+		} else {
+			callback(genderid, id); // OK
+		}
+	});
+};
+
+function getGender(id, callback) {
+	mongo.conn.collection('gender').find({uid: id})
+	.toArray((error, results, fields) => {
+		if (error) {
+			callback(0);
+			console.log(error);
+		} else {
+			if (results.length > 0) {
+				callback(results[0].gender);
+			} else {
+				// if not found, fetch from facebook
+				facebook.getFbData(id, data => {
+					data = JSON.parse(data);
+					if (!data.gender) {
+						setGender(id, la.KEYWORD_GENDER + 'khong', (ret, id) => {});
+						callback(0);
+					} else if (data.gender === 'male') {
+						setGender(id, la.KEYWORD_GENDER + 'nu', (ret, id) => {});
+						callback(2);
+					} else if (data.gender === 'female')  {
+						setGender(id, la.KEYWORD_GENDER + 'nam', (ret, id) => {});
+						callback(1);
+					}
+				});
+			}
+		}
+	});
 }
 
 var findPair = (id, mygender) => {
@@ -247,44 +324,15 @@ var connect2People = (id, target, mygender, target_gender, wantedGender) => {
 	sendTextMessage(target, la.START_CHAT);
 }
 
-var sendTextMessage = (sender, txt, callback) => {
-	sendFacebookApi(sender, sender, {text: txt}, false, callback);
+function processEndChat(id1, id2) {
+	tools.deleteFromChatRoom(mongo, id1, () => {
+		sendButtonMsg(id1, la.END_CHAT, true, true, true);
+		sendButtonMsg(id2, la.END_CHAT_PARTNER, true, true, true);
+	});
 }
 
-var sendButtonMsg = (sender, txt, showStartBtn, showHelpBtn, showRpBtn = false) => {
-	let btns = [];
-	if (showStartBtn) btns.push({
-		"type": "postback",
-		"title": "Bắt đầu chat",
-		"payload": "batdau"
-	});
-	if (showHelpBtn) btns.push({
-		"type": "postback",
-		"title": "Xem trợ giúp",
-		"payload": "trogiup"
-	});
-	else btns.push({
-		"type": "web_url",
-		"title": "Gửi phản hồi",
-		"url": co.REPORT_LINK
-	});
-	if (showRpBtn)
-		btns.push({
-			"type": "web_url",
-			"title": "Gửi phản hồi",
-			"url": co.REPORT_LINK
-		});
-	sendFacebookApi(sender, sender, {
-		"attachment": {
-			"type": "template",
-			"payload": {
-				"template_type": "button",
-				"text": txt,
-				"buttons": btns
-			}
-		},
-		"quick_replies": facebook.quickbtns
-	});
+var sendTextMessage = (receiver, txt) => {
+	sendFacebookApi(receiver, receiver, {text: txt});
 }
 
 var sendMessage = (sender, receiver, data) => {
@@ -335,12 +383,9 @@ var sendMessage = (sender, receiver, data) => {
 	}
 }
 
-function initChatbot() {
-	admin.init(app, tools, mongo);
-	cronjob.init(tools, mongo, sendButtonMsg);
-	app.listen(app.get('port'), () => {
-		console.log(`running on port ${app.get('port')}`);
-	})
-}
+// spin spin sugar
+app.listen(app.get('port'), () => {
+	console.log(`running on port ${app.get('port')}`);
+})
 
 if (co.DEV_ID != 0) sendTextMessage(co.DEV_ID, `${co.APP_NAME} is up`);

@@ -1,8 +1,9 @@
 'use strict';
 
-const co = require('./custom/const');
+const co = require('../custom/const');
 
 var tables = ['chatroom', 'waitroom', 'gender', 'lasttalk', 'version'];
+
 var init = (mongo, callback) => {
 	getCollectionNames(mongo, currentTables => {
 		let doneAdd = 0;

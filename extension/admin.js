@@ -1,17 +1,17 @@
 const la = require('../custom/lang');
 const co = require('../custom/const');
-const facebook = require('../facebook');
+const facebook = require('../api/facebook');
 const pusage = require('pidusage-fork');
 const request = require('request');
 const broadcast = require('./broadcast');
 const CryptoJS = require('crypto-js');
 const HASHED_PASS = CryptoJS.SHA256(co.ADMIN_PASSWORD).toString();
 var tools;
-var sqlconn;
+var mongo;
 
-var init = (app, toolsObj, sqlconnObj) => {
+var init = (app, toolsObj, mongoObj) => {
 	tools = toolsObj;
-	sqlconn = sqlconnObj;
+	mongo = mongoObj;
 	if (co.ADMIN_PASSWORD == '') return;
 
 	app.post('/admin/auth/', (req, res) => {
@@ -29,18 +29,29 @@ var init = (app, toolsObj, sqlconnObj) => {
 			return;
 		}
 		try {
-			if (data['type'] == 'del') {
-				if (isNaN(data['id'])) return;
-				tools.findPartnerChatRoom(sqlconn, data['id'], partner => {
-					if (partner) {
-						sendTextMessage(data['id'], la.END_CHAT_PARTNER);
-						sendTextMessage(partner, la.END_CHAT_PARTNER);
-					}
-					else
-						sendTextMessage(data['id'], la.END_CHAT_FORCE);
+			if (data['type'] == "cradd") {
+				if (isNaN(data['id1']) || isNaN(data['id2'])) return;
+				var id1 = data['id1'];
+				var id2 = data['id2'];
+				tools.deleteFromWaitRoom(mongo, id1);
+				tools.deleteFromWaitRoom(mongo, id2);
+				tools.findPartnerChatRoom(mongo, id1, function(partner_id1) {
+					tools.findPartnerChatRoom(mongo, id2, function(partner_id2) {
+						if (!partner_id1 && !partner_id2) tools.writeToChatRoom(mongo, id1, id2, data['gender1'], data['gender2'], false);
+					});
 				});
-				tools.deleteFromChatRoom(sqlconn, data['id'], () => {});
-				tools.deleteFromWaitRoom(sqlconn, data['id']);
+			} else if (data['type'] == 'del') {
+				if (isNaN(data['id'])) return;
+				tools.findPartnerChatRoom(mongo, data['id'], partner => {
+					if (partner) {
+						facebook.sendButtonMsg(data['id'], la.END_CHAT_PARTNER, true, true, true);
+						facebook.sendButtonMsg(partner, la.END_CHAT_PARTNER, true, true, true);
+					} else {
+						facebook.sendButtonMsg(data['id'], la.END_CHAT_FORCE, true, true);
+					}
+				});
+				tools.deleteFromChatRoom(mongo, data['id'], () => {});
+				tools.deleteFromWaitRoom(mongo, data['id']);
 			}
 		} catch (e) {
 			console.log(e)
@@ -58,12 +69,12 @@ var init = (app, toolsObj, sqlconnObj) => {
 			chatroom: {}
 		};
 
-		tools.getListWaitRoom(sqlconn, (list, genderlist, timelist) => {
+		tools.getListWaitRoom(mongo, (list, genderlist, timelist) => {
 			out.waitroom.ids = list;
 			out.waitroom.gender = genderlist;
 			out.waitroom.time = timelist;
 
-			tools.getListChatRoom(sqlconn, listt => {
+			tools.getListChatRoom(mongo, listt => {
 				out.chatroom.ids = listt;
 
 				pusage.stat(process.pid, (err, stat) => {
@@ -92,7 +103,7 @@ var init = (app, toolsObj, sqlconnObj) => {
 				res.send(data);
 			});
 		} catch (e) {
-			res.send('');
+			res.send('{error: true}');
 		}
 	});
 
@@ -111,6 +122,19 @@ var init = (app, toolsObj, sqlconnObj) => {
 		}
 	});
 
+	app.post('/admin/db/reset/', (req, res) => {
+		if (!doAuth(req.body['token'])) {
+			res.send('ERR_AUTH');
+			return;
+		}
+		try {
+			tools.dropDatabase(mongo);
+			res.send('OK');
+		} catch (e) {
+			res.send(`Error resetting database: ${JSON.stringify(e)}`);
+		}
+	});
+
 	app.post('/admin/version/', (req, res) => {
 		res.send(co.VERSION);
 	});
@@ -122,33 +146,11 @@ function doAuth(token) {
 		var bytes = CryptoJS.AES.decrypt(token, HASHED_PASS);
 		var data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 		var d = new Date();
-		return (d.getTime() - data.time < 24 * 60 * 60000 &&
-			data.hash == CryptoJS.SHA256(data.time + '' + HASHED_PASS).toString());
+		return (d.getTime() - data.time < co.MAX_SESSION_MINUTES * 60 * 1000 // 30 mins
+			&& data.hash == CryptoJS.SHA256(data.time + '' + HASHED_PASS).toString());
 	} catch (e) {
 		return false;
 	}
-}
-
-function sendTextMessage(receiver, text) {
-	let messageData = {text: text}
-
-	request({
-		url: 'http://api.chatbot.ngxson.com/graph/me/messages',
-		qs: {access_token: co.NCB_TOKEN},
-		method: 'POST',
-		json: {
-			recipient: {id: receiver},
-			message: messageData,
-			messaging_type: "MESSAGE_TAG",
-			tag: "NON_PROMOTIONAL_SUBSCRIPTION"
-		}
-	}, (error, response, body) => {
-		if (error) {
-			console.log(`Error sending messages: ${JSON.stringify(error)}`);
-		} else if (response.body.error) {
-			console.log(`${receiver} error: ${JSON.stringify(response.body.error)}`);
-		}
-	})
 }
 
 module.exports = {

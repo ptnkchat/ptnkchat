@@ -1,38 +1,13 @@
 'use strict';
 
-const co = require('./custom/const');
-const la = require('./custom/lang');
+const co = require('../custom/const');
+const la = require('../custom/lang');
 const request = require('request');
 var heroku = null;
 
 if (co.HEROKU_API_KEY) {
     var Heroku = require('heroku-client');
     heroku = new Heroku({token: co.HEROKU_API_KEY});
-}
-
-exports.getFbData = (id, callback) => {
-	request({
-		url: 'http://api.chatbot.ngxson.com/graph/' + id,
-		qs: {access_token: co.NCB_TOKEN},
-		method: 'GET'
-		}, (error, response, body) => {
-			if (error) callback('{error: true}');
-			else callback(body);
-		})
-}
-
-exports.setupFBApi = () => {
-	request({
-		url: 'http://api.chatbot.ngxson.com/graph/me/messenger_profile',
-		qs: {access_token: co.NCB_TOKEN},
-		method: 'POST',
-		json: {
-			"get_started": {
-				"payload": "ʬ"
-			},
-			"persistent_menu": exports.persistent_menu
-		}
-	}, (error, response, body) => console.log(`set_persistent_menu: ${JSON.stringify(response.body)}`))
 }
 
 exports.persistent_menu = [
@@ -119,10 +94,24 @@ exports.quickbtns_mini = [
 	}
 ];
 
-var sendFacebookApi = (sender, receiver, messageData, dontSendErr = false, callback = null) => {
+exports.setupFBApi = () => {
+	request({
+		url: 'http://api.chatbot.ngxson.com/graph/me/messenger_profile',
+		qs: {access_token: co.NCB_TOKEN},
+		method: 'POST',
+		json: {
+			"get_started": {
+				"payload": "ʬ"
+			},
+			"persistent_menu": exports.persistent_menu
+		}
+	}, (error, response, body) => console.log(`set_persistent_menu: ${JSON.stringify(response.body)}`))
+}
+
+var sendFacebookApi = (sender, receiver, messageData, dontSendErr = false) => {
 	if (messageData.text || messageData.attachment) {
 		if (messageData.text && messageData.text.length > 639) {
-			sendFacebookApi(sender, sender, {text: la.ERR_TOO_LONG}, null, true);
+			sendFacebookApi(sender, sender, {text: la.ERR_TOO_LONG}, true);
 			return;
 		}
 
@@ -142,9 +131,9 @@ var sendFacebookApi = (sender, receiver, messageData, dontSendErr = false, callb
 			} else if (response.body.error && response.body.error.code && !dontSendErr) {
 				console.log(`${sender} vs ${receiver} error: ${JSON.stringify(response.body.error)}`);
 				if (response.body.error.code == 200 && sender != receiver)
-					sendFacebookApi(sender, sender, {text: la.ERR_200}, null, true);
+					sendFacebookApi(sender, sender, {text: la.ERR_200}, true);
 				else if (response.body.error.code == 230 && sender != receiver)
-					sendFacebookApi(sender, sender, {text: la.ERR_230}, null, true);
+					sendFacebookApi(sender, sender, {text: la.ERR_230}, true);
 				else if (co.HEROKU_API_KEY && response.body.error.code == 5)
 					heroku.delete(`/apps/${co.APP_NAME}/dynos/web.1`, (err, app) => {});
 			}
@@ -153,10 +142,44 @@ var sendFacebookApi = (sender, receiver, messageData, dontSendErr = false, callb
 		console.log('__sendMessage: err: neither text nor attachment');
 		console.log(messageData);
 	}
-	if (callback && typeof callback === 'function')
-		callback();
 }
 exports.sendFacebookApi = sendFacebookApi;
+
+exports.sendButtonMsg = (receiver, txt, showStartBtn, showHelpBtn, showRpBtn = false) => {
+	let btns = [];
+	if (showStartBtn) btns.push({
+		"type": "postback",
+		"title": "Bắt đầu chat",
+		"payload": "batdau"
+	});
+	if (showHelpBtn) btns.push({
+		"type": "postback",
+		"title": "Xem trợ giúp",
+		"payload": "trogiup"
+	});
+	else btns.push({
+		"type": "web_url",
+		"title": "Gửi phản hồi",
+		"url": co.REPORT_LINK
+	});
+	if (showRpBtn)
+		btns.push({
+			"type": "web_url",
+			"title": "Gửi phản hồi",
+			"url": co.REPORT_LINK
+		});
+	sendFacebookApi(receiver, receiver, {
+		"attachment": {
+			"type": "template",
+			"payload": {
+				"template_type": "button",
+				"text": txt,
+				"buttons": btns
+			}
+		},
+		"quick_replies": exports.quickbtns
+	});
+}
 
 exports.sendSeenIndicator = receiver => {
 	request({
@@ -170,6 +193,20 @@ exports.sendSeenIndicator = receiver => {
 			tag: "NON_PROMOTIONAL_SUBSCRIPTION"
 		}
 	}, (error, response, body) => {})
+}
+
+exports.getFbData = (id, callback) => {
+	request({
+		url: 'http://api.chatbot.ngxson.com/graph/' + id,
+		qs: {
+			access_token: co.NCB_TOKEN,
+			fields: 'name,first_name,last_name,profile_pic,locale,gender'
+		},
+		method: 'GET'
+		}, (error, response, body) => {
+			if (error) callback('{error: true}');
+			else callback(body);
+		})
 }
 
 exports.sendImageVideoReport = (msg_data, sender, receiver) => {

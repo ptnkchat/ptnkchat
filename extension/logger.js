@@ -1,5 +1,5 @@
 const co = require('../custom/const');
-const facebook = require('../facebook');
+const facebook = require('../api/facebook');
 
 function postLog(id1, id2) {
 	let data = `entry.${co.POST_LOG_P1}=${id1}&entry.${co.POST_LOG_P2}=${id2}`;
@@ -10,7 +10,7 @@ function postLog(id1, id2) {
 		if (info1.error)
 			data += 'error';
 		else
-			data += encodeURI(info1.last_name + ' ' + info1.first_name);
+			data += encodeURI(info1.name);
 
 		facebook.getFbData(id2, info2 => {
 			info2 = JSON.parse(info2);
@@ -18,7 +18,7 @@ function postLog(id1, id2) {
 			if (info2.error)
 				data += 'error';
 			else
-				data += encodeURI(info2.last_name + ' ' + info2.first_name);
+				data += encodeURI(info2.name);
 
 				// Send to Google Forms
 				var requ = require('https').request({

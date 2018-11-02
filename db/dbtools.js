@@ -2,6 +2,7 @@
 
 const dbmongo = require('./dbmongo');
 const cache = require('./dbcache');
+
 var cacheReady = false;
 
 var init = (mongo) => {
@@ -96,8 +97,8 @@ module.exports = {
 		cache.lt_write(id2, id1);
 	},
 
-	dropDatabase: () => {
-		dbmongo.dropDatabase();
+	dropDatabase: mongo => {
+		dbmongo.dropDatabase(mongo);
 		cache.clear();
 	}
 };

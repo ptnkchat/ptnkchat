@@ -15,7 +15,7 @@ module.exports = {
 	ATTACHMENT_FILE : "[BOT] Bạn ý đã gửi 1 tệp tin: ",
 	ATTACHMENT_LINK : "[BOT] Bạn ý đã gửi 1 đường link: ",
 	ERR_FAKE_MSG : "[BOT] Lỗi: Bạn không được giả mạo tin nhắn của bot!",
-	SQL_ERR : "[BOT] Lỗi: Không thể kết nối với database. Hãy báo cho admin!",
+	DATABASE_ERR : "[BOT] Lỗi: Không thể kết nối với database. Hãy báo cho admin!",
 	GENDER_ERR : "[BOT] Lỗi: Giới tính nhập vào không hợp lệ!\n\nẤn trợ giúp (hoặc gửi trogiup) để xem thêm.",
 	GENDER_WRITE_OK : "[BOT] Bạn đã chọn giới tính mong muốn tìm được là: ",
 	GENDER_WRITE_WARN : "\n\nLưu ý: Tùy chọn này chỉ có tác dụng với PHẦN LỚN các cuộc nói chuyện.",
