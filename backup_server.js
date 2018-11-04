@@ -39,6 +39,7 @@ function sendTextMessage(receiver, text) {
 		json: {
 			recipient: {id: receiver},
 			message: messageData,
+			messaging_type: "RESPONSE"
 		}
 	}, (error, response, body) => {
 		if (error) {
