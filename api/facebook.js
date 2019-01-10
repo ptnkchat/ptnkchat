@@ -200,7 +200,7 @@ exports.getFbData = (id, callback) => {
 		url: 'http://api.chatbot.ngxson.com/graph/' + id,
 		qs: {
 			access_token: co.NCB_TOKEN,
-			fields: 'name,first_name,last_name,profile_pic,locale,gender'
+			fields: 'name,first_name,last_name,profile_pic,gender'
 		},
 		method: 'GET'
 		}, (error, response, body) => {
