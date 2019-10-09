@@ -30,5 +30,5 @@ module.exports = {
 	ADMIN_PASSWORD : '', // Password để login vào trang admin
 	MAX_SESSION_MINUTES : 30, // Thời gian 1 session
 	DEV_ID : 0,
-	VERSION : '4.1.2-LBH'
+	VERSION : require('project-version')
 };

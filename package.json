@@ -1,6 +1,6 @@
 {
   "name": "ptnkchat",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ptnkchat/ptnkchat.git"
@@ -20,6 +20,7 @@
     "heroku-client": "^3.0.6",
     "mongodb": "^3.1.8",
     "pidusage-fork": "^0.1.2",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "project-version": "^1.2.0"
   }
 }
