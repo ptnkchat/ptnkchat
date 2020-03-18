@@ -1,62 +1,68 @@
+'use strict';
+
 const MAX_CAT_IMG = 10229;
 const MAX_DOG_IMG = 5250;
-const facebook = require('../api/facebook');
+const fb = require('../api/facebook');
 
-function sendCatPic(id, id2, notInChat) {
-  getCatData(data => {
-    if (notInChat) data['quick_replies'] = facebook.quickbtns;
-    facebook.sendFacebookApi(id, id, data);
-    if (id2 != null) facebook.sendFacebookApi(id2, id2, data);
-  });
+function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function sendDogPic(id, id2, notInChat) {
-  getDogData(data => {
-    if (notInChat) data['quick_replies'] = facebook.quickbtns;
-    facebook.sendFacebookApi(id, id, data);
-    if (id2 != null) facebook.sendFacebookApi(id2, id2, data);
-  });
-}
-
-var getCatData = callback => {
-  var img = randomIntFromInterval(1, MAX_CAT_IMG);
-  var url = '';
+function getCatData(callback) {
+  let img = randomIntFromInterval(1, MAX_CAT_IMG);
+  let url = '';
   if (img <= 9360) {
     url = `nuimeow.github.io/jpg/${img}.jpg`;
   } else {
     url = `nuimeow.github.io/gif/${img}.gif`;
   }
   callback({
-    "attachment": {"type": 'image',
-    "payload": {
-      "url": `https://${url}`
-    }}
+    'attachment': {
+      'type': 'image',
+      'payload': {
+        'url': `https://${url}`
+      }
+    }
   });
 }
 
-var getDogData = callback => {
-  var img = randomIntFromInterval(1, MAX_DOG_IMG);
-  var url = '';
+function getDogData(callback) {
+  let img = randomIntFromInterval(1, MAX_DOG_IMG);
+  let url = '';
   if (img <= 5169) {
     url = `nuimeow.github.io/dog/jpg/${img}.jpg`;
   } else {
     url = `nuimeow.github.io/dog/jpg/${img}.gif`;
   }
   callback({
-    "attachment": {"type": 'image',
-    "payload": {
-      "url": `https://${url}`
-    }}
+    'attachment': {
+      'type': 'image',
+      'payload': {
+        'url': `https://${url}`
+      }
+    }
+  });
+}
+
+function sendCatPic(id, id2, notInChat) {
+  getCatData(data => {
+    if (notInChat) data.quick_replies = fb.quickbtns;
+    fb.sendFacebookApi(id, id, data);
+    if (id2 !== null) fb.sendFacebookApi(id2, id2, data);
+  });
+}
+
+function sendDogPic(id, id2, notInChat) {
+  getDogData(data => {
+    if (notInChat) data.quick_replies = fb.quickbtns;
+    fb.sendFacebookApi(id, id, data);
+    if (id2 !== null) fb.sendFacebookApi(id2, id2, data);
   });
 }
 
 module.exports = {
-  sendCatPic: sendCatPic,
-  sendDogPic: sendDogPic,
   getCatData: getCatData,
-  getDogData: getDogData
+  getDogData: getDogData,
+  sendCatPic: sendCatPic,
+  sendDogPic: sendDogPic
 };
-
-function randomIntFromInterval(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}

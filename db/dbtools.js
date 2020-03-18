@@ -6,14 +6,14 @@ const cache = require('./dbcache');
 var cacheReady = false;
 
 var init = (mongo) => {
-  cache.fetchToCache(mongo, ok => {
+  cache.fetchToCache(mongo, (ok) => {
     if (ok) {
       cacheReady = true;
     } else {
       setTimeout(() => init(mongo), 1000);
     }
-  })
-}
+  });
+};
 
 module.exports = {
   init: init,
@@ -21,16 +21,16 @@ module.exports = {
   cacheReady: cacheReady,
 
   writeToWaitRoom: (mongo, id, gender) => {
-    dbmongo.writeToWaitRoom(mongo, id, gender);
     let d = new Date();
     cache.wr_write(id, gender, d.getTime());
+    dbmongo.writeToWaitRoom(mongo, id, gender);
   },
 
   findInWaitRoom: (mongo, id, callback) => {
     if (cacheReady) {
-      cache.wr_find(id, callback)
+      cache.wr_find(id, callback);
     } else {
-      dbmongo.findInWaitRoom(mongo, id, callback)
+      dbmongo.findInWaitRoom(mongo, id, callback);
     }
   },
 
@@ -57,9 +57,9 @@ module.exports = {
   // callback(id, role, data);
   findPartnerChatRoom: (mongo, id, callback) => {
     if (cacheReady) {
-      cache.cr_find(id, callback)
+      cache.cr_find(id, callback);
     } else {
-      dbmongo.findPartnerChatRoom(mongo, id, callback)
+      dbmongo.findPartnerChatRoom(mongo, id, callback);
     }
   },
 
@@ -77,7 +77,7 @@ module.exports = {
     if (cacheReady) {
       cache.cr_read(callback);
     } else {
-      dbmongo.getListChatRoom(mongo, callback)
+      dbmongo.getListChatRoom(mongo, callback);
     }
   },
 

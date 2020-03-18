@@ -1,7 +1,9 @@
+'use strict';
+
 const co = require('../custom/const');
 const facebook = require('../api/facebook');
 
-function postLog(id1, id2) {
+module.exports.postLog = (id1, id2) => {
   let data = `entry.${co.POST_LOG_P1}=${id1}&entry.${co.POST_LOG_P2}=${id2}`;
 
   facebook.getFbData(id1, info1 => {
@@ -35,12 +37,4 @@ function postLog(id1, id2) {
         requ.end();
     });
   });
-}
-
-function postErr() {
-  //TODO
-}
-
-module.exports = {
-  postLog: postLog
 };
