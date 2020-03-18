@@ -1,22 +1,11 @@
 'use strict';
 
-const HashTable = require('hashtable');
+const MegaHash = require('megahash');
 
-var waitroom = new HashTable();
-waitroom.max_load_factor(10);
-waitroom.rehash(5);
-
-var pair1 = new HashTable();
-pair1.max_load_factor(10);
-pair1.rehash(100);
-
-var pair2 = new HashTable();
-pair2.max_load_factor(10);
-pair2.rehash(100);
-
-var lasttalk = new HashTable();
-lasttalk.max_load_factor(10);
-lasttalk.rehash(100);
+var waitroom = new MegaHash();
+var pair1 = new MegaHash();
+var pair2 = new MegaHash();
+var lasttalk = new MegaHash();
 
 var Partner1 = function(partner, mygender, partner_gender, genderok, starttime) {
 	this.partner = '' + partner;
@@ -35,7 +24,7 @@ var Partner2 = function(partner, mygender, partner_gender, genderok, starttime) 
 }
 
 var wr_write = (id, gender, time) => {
-	waitroom.put('' + id, {gender: gender, time: time});
+	waitroom.set('' + id, {gender: gender, time: time});
 }
 
 var wr_find = (id, callback) => {
@@ -47,25 +36,26 @@ var wr_find = (id, callback) => {
 }
 
 var wr_del = id => {
-	waitroom.remove('' + id);
+	waitroom.delete('' + id);
 }
 
 var wr_read = callback => {
 	let ids = []; let genders = []; let time = [];
-	let db = shuffle(waitroom.keys());
-	for (let i = 0; i < db.length; i++) {
-		ids.push(db[i]);
-		let temp = waitroom.get(db[i]);
+  let key = waitroom.nextKey();
+  while (key) {
+		let temp = waitroom.get(key);
+		ids.push(key);
 		genders.push(temp.gender);
 		time.push(temp.time);
+    key = waitroom.nextKey(key);
 	}
 	callback(ids, genders, time);
 }
 
 var cr_write = (id1, id2, gender1, gender2, isWantedGender, starttime) => {
 	var genderok = isWantedGender ? 1 : 0;
-	pair1.put('' + id1, new Partner1(id2, gender1, gender2, genderok, starttime));
-	pair2.put('' + id2, new Partner2(id1, gender2, gender1, genderok, starttime));
+	pair1.set('' + id1, new Partner1(id2, gender1, gender2, genderok, starttime));
+	pair2.set('' + id2, new Partner2(id1, gender2, gender1, genderok, starttime));
 }
 
 var cr_find = (id, callback) => {
@@ -86,12 +76,12 @@ var cr_find = (id, callback) => {
 var cr_del = (id, callback) => {
 	if (pair1.has('' + id)) {
 		var temp = pair1.get('' + id);
-		pair2.remove(temp.partner);
-		pair1.remove('' + id);
+		pair2.delete(temp.partner);
+		pair1.delete('' + id);
 	} else if (pair2.has('' + id)) {
 		var temp = pair2.get('' + id);
-		pair1.remove(temp.partner);
-		pair2.remove('' + id);
+		pair1.delete(temp.partner);
+		pair2.delete('' + id);
 	}
 	callback();
 }
@@ -106,11 +96,12 @@ function findInCR(id, cr, number) {
 }
 
 var cr_read = callback => {
-	var ret = [];
-	var db = pair1.keys();
-	for (var i = 0; i < db.length; i++) {
-		var temp = pair1.get(db[i]);
-		ret.push({'id1': db[i], 'id2': temp.partner, 'gender1': temp.mygender, 'gender2': temp.partner_gender, 'genderok': temp.genderok, 'starttime': temp.starttime});
+	let ret = [];
+  let key = pair1.nextKey();
+  while (key) {
+		var temp = pair1.get(key);
+		ret.push({'id1': key, 'id2': temp.partner, 'gender1': temp.mygender, 'gender2': temp.partner_gender, 'genderok': temp.genderok, 'starttime': temp.starttime});
+    key = pair1.nextKey(key);
 	}
 	callback(ret);
 }
@@ -123,7 +114,7 @@ var lt_find = (id1, id2) => {
 }
 
 var lt_write = (id1, id2) => {
-	lasttalk.put('' + id1, '' + id2);
+	lasttalk.set('' + id1, '' + id2);
 }
 
 var fetchToCache = (mongo, callback) => {
@@ -181,14 +172,3 @@ module.exports = {
 	fetchToCache: fetchToCache,
 	clear: clear
 };
-
-function shuffle(array) {
-	var m = array.length, t, i;
-	while (m) {
-		i = Math.floor(Math.random() * m--);
-		t = array[m];
-		array[m] = array[i];
-		array[i] = t;
-	}
-	return array;
-}

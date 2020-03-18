@@ -1,6 +1,9 @@
 {
   "name": "ptnkchat",
   "version": "4.1.2",
+  "engines": {
+    "node": "12.X"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ptnkchat/ptnkchat.git"
@@ -16,7 +19,7 @@
     "cors": "^2.8.4",
     "crypto-js": "^3.1.9-1",
     "express": "^4.16.4",
-    "hashtable": "^2.0.2",
+    "megahash": "^1.0.3",
     "heroku-client": "^3.0.6",
     "mongodb": "^3.1.8",
     "pidusage-fork": "^0.1.2",
