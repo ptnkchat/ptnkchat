@@ -128,7 +128,7 @@ async function fetchToCache(mongo) {
   try {
     clear();
     let cr = await mongo.collection('chatroom').find().toArray();
-    cr.forEach((item) => {
+    cr.forEach(item => {
       cr_write(item.id1, item.id2, item.gender1, item.gender2, item.genderok, item.starttime);
     });
     let wr = await mongo.collection('waitroom').find().toArray();
