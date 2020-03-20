@@ -46,25 +46,7 @@ const cronjob = require('./extension/cronjob');
 
 var MAINTAINING = false;
 
-var mongo = {};
-
-function initChatbot() {
-  admin.init(app, tools, mongo);
-  cronjob.init(tools, mongo);
-}
-
-function connectToMongo() {
-  MongoClient.connect(co.DB_CONFIG_URI, {useNewUrlParser: true, useUnifiedTopology: true}).then(mdb => {
-    mongo.conn = mdb.db(co.DB_NAME);
-    tools.initMongo(mongo, () => {
-      tools.init(mongo);
-      initChatbot();
-    });
-  }).catch(err => {
-    console.log(err);
-    setTimeout(connectToMongo, 1000);
-  });
-}
+var mongo = null;
 
 function setGender(id, gender_str, callback) {
   let genderid = 0;
@@ -78,8 +60,7 @@ function setGender(id, gender_str, callback) {
     callback(-1, id); // no valid value
     return;
   }
-  mongo.conn.collection('gender').updateOne({uid: id}, {$set: {uid: id, gender: genderid}},
-    {upsert: true}, (error) => {
+  mongo.collection('gender').updateOne({uid: id}, {$set: {uid: id, gender: genderid}}, {upsert: true}, (error) => {
     if (error) {
       callback(-2, id); // ERR writing to db
       console.log(error);
@@ -90,7 +71,7 @@ function setGender(id, gender_str, callback) {
 }
 
 function getGender(id, callback) {
-  mongo.conn.collection('gender').find({uid: id}).toArray((error, results) => {
+  mongo.collection('gender').find({uid: id}).toArray((error, results) => {
     if (error) {
       callback(0);
       console.log(error);
@@ -99,7 +80,7 @@ function getGender(id, callback) {
         callback(results[0].gender);
       } else {
         // if not found, fetch from facebook
-        fb.getFbData(id, data => {
+        fb.getUserData(id, data => {
           data = JSON.parse(data);
           if (!data.gender) {
             setGender(id, la.KEYWORD_GENDER + 'khong', () => {});
@@ -140,7 +121,7 @@ function findPair(id, mygender) {
       let target = list[i];
       let target_gender = genderlist[i];
       // kiểm tra xem có phải họ vừa chat xong ko?
-      if (tools.findInLastTalk(mongo, id, target) || tools.findInLastTalk(mongo, target, id)) {
+      if (tools.findLastTalk(mongo, id, target) || tools.findLastTalk(mongo, target, id)) {
         // nếu có thì next
         continue;
       } else {
@@ -337,40 +318,51 @@ function processEvent(event) {
   }
 }
 
-connectToMongo();
+function connectToMongo(prev) {
+  return new Promise(async (current) => {
+    const resolve = () => (prev && prev()) || current();
 
-fb.setupFBApi();
-
-// set port
-app.set('port', (process.env.PORT || 5000));
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({limit: '5mb', extended: false}));
-
-// parse application/json
-app.use(bodyParser.json({limit: '5mb'}));
-
-// enable cors
-app.use(cors());
-
-// index
-app.get('/', (req, res) => {
-  res.send(`${co.APP_NAME} is up`);
-});
-
-// process messaging events
-app.post('/webhook/', (req, res) => {
-  let messaging_events = req.body.entry[0].messaging;
-  res.sendStatus(200);
-  for (let i = 0; i < messaging_events.length; i++)
-    processEvent(messaging_events[i]);
-});
-
-app.listen(app.get('port'), () => {
-  console.log(`running on port ${app.get('port')}`);
-});
-
-// send message to main developer
-if (co.DEV_ID !== 0) {
-  fb.sendTextMessage(co.DEV_ID, `${co.APP_NAME} is up`);
+    try {
+      let mdb = await MongoClient.connect(co.DB_CONFIG_URI, {useNewUrlParser: true, useUnifiedTopology: true});
+      mongo = mdb.db(co.DB_NAME);
+      resolve();
+    } catch(e) {
+      console.log(`Error connecting to Mongo: ${e}`);
+      setTimeout(() => connectToMongo(resolve), 1000);
+    }
+  });
 }
+
+async function initChatbot() {
+  app.set('port', (process.env.PORT || 5000));
+  app.use(bodyParser.urlencoded({limit: '5mb', extended: false}));
+  app.use(bodyParser.json({limit: '5mb'}));
+  app.use(cors());
+
+  await connectToMongo();
+  await tools.init(mongo);
+  admin.init(app, tools, mongo);
+  cronjob.init(tools, mongo);
+  fb.setPersistentMenu();
+
+  app.get('/', (req, res) => {
+    res.send(`${co.APP_NAME} is up`);
+  });
+
+  app.post('/webhook/', (req, res) => {
+    let messaging_events = req.body.entry[0].messaging;
+    res.sendStatus(200);
+    for (let i = 0; i < messaging_events.length; i++)
+      processEvent(messaging_events[i]);
+  });
+
+  app.listen(app.get('port'), () => {
+    console.log(`running on port ${app.get('port')}`);
+  });
+
+  if (co.DEV_ID !== 0) {
+    fb.sendTextMessage(co.DEV_ID, `${co.APP_NAME} is up`);
+  }
+}
+
+initChatbot();

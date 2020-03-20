@@ -10,7 +10,7 @@
 const request = require('request');
 
 function getCreativeId (access_token, message) {
-  var promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     request({
       url: 'http://api.chatbot.ngxson.com/graph/me/message_creatives?access_token=' + access_token,
       method: 'POST',
@@ -30,7 +30,6 @@ function getCreativeId (access_token, message) {
       }
     });
   });
-  return promise;
 }
 
 function handleCreativeId(access_token, cid, callback) {
@@ -62,7 +61,7 @@ function handleCreativeId(access_token, cid, callback) {
   });
 }
 
-module.exports.sendBroadcast = (access_token, text, callback) => {
+function sendBroadcast(access_token, text, callback) {
   request({
     url: 'http://api.chatbot.ngxson.com/graph/me/message_creatives?access_token=' + access_token,
     method: 'POST',
@@ -83,16 +82,16 @@ module.exports.sendBroadcast = (access_token, text, callback) => {
       callback(false);
     }
   });
-};
+}
 
-module.exports.send = (access_token, message, custom_label_id) => {
-  var promise = new Promise((resolve, reject) => {
+function send(access_token, message, custom_label_id) {
+  return new Promise((resolve, reject) => {
     getCreativeId(access_token, message).then(creative_id => {
       if (!creative_id) {
         reject();
         return;
       }
-      var data = {
+      let data = {
         message_creative_id: creative_id
       };
       if (custom_label_id) data.custom_label_id = custom_label_id;
@@ -116,5 +115,9 @@ module.exports.send = (access_token, message, custom_label_id) => {
       });
     });
   });
-  return promise;
+}
+
+module.exports = {
+  sendBroadcast: sendBroadcast,
+  send: send
 };

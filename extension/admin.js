@@ -2,7 +2,7 @@
 
 const la = require('../custom/lang');
 const co = require('../custom/const');
-const facebook = require('../api/facebook');
+const fb = require('../api/facebook');
 const pidusage = require('pidusage');
 const broadcast = require('./broadcast');
 const CryptoJS = require('crypto-js');
@@ -37,7 +37,7 @@ module.exports.init = (app, toolsObj, mongoObj) => {
   });
 
   app.post('/admin/edit/chatroom/', (req, res) => {
-    var data = req.body;
+    let data = req.body;
     if (!doAuth(data.token)) {
       res.send('ERR_AUTH');
       return;
@@ -45,8 +45,8 @@ module.exports.init = (app, toolsObj, mongoObj) => {
     try {
       if (data.type === 'cradd') {
         if (isNaN(data.id1) || isNaN(data.id2)) return;
-        var id1 = data.id1;
-        var id2 = data.id2;
+        let id1 = data.id1;
+        let id2 = data.id2;
         tools.deleteFromWaitRoom(mongo, id1);
         tools.deleteFromWaitRoom(mongo, id2);
         tools.findPartnerChatRoom(mongo, id1, (partner_id1) => {
@@ -58,10 +58,10 @@ module.exports.init = (app, toolsObj, mongoObj) => {
         if (isNaN(data.id)) return;
         tools.findPartnerChatRoom(mongo, data.id, (partner) => {
           if (partner) {
-            facebook.sendButtonMsg(data.id, la.END_CHAT_PARTNER, true, true, true);
-            facebook.sendButtonMsg(partner, la.END_CHAT_PARTNER, true, true, true);
+            fb.sendButtonMsg(data.id, la.END_CHAT_PARTNER, true, true, true);
+            fb.sendButtonMsg(partner, la.END_CHAT_PARTNER, true, true, true);
           } else {
-            facebook.sendButtonMsg(data.id, la.END_CHAT_FORCE, true, true);
+            fb.sendButtonMsg(data.id, la.END_CHAT_FORCE, true, true);
           }
         });
         tools.deleteFromChatRoom(mongo, data.id, () => {});
@@ -78,7 +78,7 @@ module.exports.init = (app, toolsObj, mongoObj) => {
       res.send('ERR_AUTH');
       return;
     }
-    var out = {
+    let out = {
       waitroom: {},
       chatroom: {}
     };
@@ -92,14 +92,14 @@ module.exports.init = (app, toolsObj, mongoObj) => {
         out.chatroom.ids = listt;
 
         pidusage(process.pid, (err, stat) => {
-          var sec = Math.floor(process.uptime());
-          var d   = Math.floor(sec / (24 * 60 * 60));
+          let sec = Math.floor(process.uptime());
+          let d   = Math.floor(sec / (24 * 60 * 60));
           sec    -= d * (24 * 60 * 60);
-          var h   = Math.floor(sec / (60 * 60));
+          let h   = Math.floor(sec / (60 * 60));
           sec    -= h * (60 * 60);
-          var m   = Math.floor(sec / (60));
+          let m   = Math.floor(sec / (60));
           sec    -= m * (60);
-          var pstat = `CPU: ${stat.cpu.toFixed(1)}%, Mem: ${(stat.memory / 1024 / 1024).toFixed(1)}MB, Uptime: ${(0 < d) ? (d + ' day ') : ''}${h}h ${m}m ${sec}s`;
+          let pstat = `CPU: ${stat.cpu.toFixed(1)}%, Mem: ${(stat.memory / 1024 / 1024).toFixed(1)}MB, Uptime: ${(0 < d) ? (d + ' day ') : ''}${h}h ${m}m ${sec}s`;
           out.pstat = pstat;
           res.send(JSON.stringify(out));
         });
@@ -113,7 +113,7 @@ module.exports.init = (app, toolsObj, mongoObj) => {
       return;
     }
     try {
-      facebook.getFbData(req.body.id, (data) => {
+      fb.getUserData(req.body.id, (data) => {
         res.send(data);
       });
     } catch (e) {

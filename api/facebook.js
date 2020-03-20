@@ -10,7 +10,7 @@ if (co.HEROKU_API_KEY) {
   heroku = new Heroku({token: co.HEROKU_API_KEY});
 }
 
-module.exports.persistent_menu = [
+var persistent_menu = [
   {
     'locale': 'default',
     'composer_input_disabled': false,
@@ -54,7 +54,7 @@ module.exports.persistent_menu = [
   }
 ];
 
-module.exports.quickbtns = [
+var quickbtns = [
   {
     'content_type': 'text',
     'title': 'tìm nam',
@@ -94,7 +94,7 @@ module.exports.quickbtns_mini = [
   }
 ];
 
-module.exports.setupFBApi = () => {
+function setPersistentMenu() {
   request({
     url: 'http://api.chatbot.ngxson.com/graph/me/messenger_profile',
     qs: {access_token: co.NCB_TOKEN},
@@ -103,14 +103,14 @@ module.exports.setupFBApi = () => {
       'get_started': {
         'payload': 'ʬ'
       },
-      'persistent_menu': exports.persistent_menu
+      'persistent_menu': persistent_menu
     }
   }, (error, response) => {
-    console.log(`set_persistent_menu: ${JSON.stringify(response.body)}`);
+    console.log(`setPersistentMenu: ${JSON.stringify(response.body)}`);
   });
-};
+}
 
-var sendFacebookApi = (sender, receiver, messageData, dontSendErr = false) => {
+function sendFacebookApi(sender, receiver, messageData, dontSendErr = false) {
   if (messageData.text || messageData.attachment) {
     if (messageData.text && messageData.text.length > 639) {
       sendFacebookApi(sender, sender, {text: la.ERR_TOO_LONG}, true);
@@ -144,14 +144,13 @@ var sendFacebookApi = (sender, receiver, messageData, dontSendErr = false) => {
     console.log('__sendMessage: err: neither text nor attachment');
     console.log(messageData);
   }
-};
-module.exports.sendFacebookApi = sendFacebookApi;
+}
 
-module.exports.sendTextMessage = (receiver, txt) => {
+function sendTextMessage(receiver, txt) {
   sendFacebookApi(receiver, receiver, {text: txt});
-};
+}
 
-module.exports.sendButtonMsg = (receiver, txt, showStartBtn, showHelpBtn, showRpBtn = false) => {
+function sendButtonMsg(receiver, txt, showStartBtn, showHelpBtn, showRpBtn = false) {
   let btns = [];
   if (showStartBtn) btns.push({
     'type': 'postback',
@@ -183,11 +182,11 @@ module.exports.sendButtonMsg = (receiver, txt, showStartBtn, showHelpBtn, showRp
         'buttons': btns
       }
     },
-    'quick_replies': exports.quickbtns
+    'quick_replies': quickbtns
   });
-};
+}
 
-module.exports.sendSeenIndicator = receiver => {
+function sendSeenIndicator(receiver) {
   request({
     url: 'http://api.chatbot.ngxson.com/graph/me/messages',
     qs: {access_token: co.NCB_TOKEN},
@@ -199,9 +198,9 @@ module.exports.sendSeenIndicator = receiver => {
       tag: 'NON_PROMOTIONAL_SUBSCRIPTION'
     }
   });
-};
+}
 
-module.exports.getFbData = (id, callback) => {
+function getUserData(id, callback) {
   request({
     url: 'http://api.chatbot.ngxson.com/graph/' + id,
     qs: {
@@ -213,9 +212,9 @@ module.exports.getFbData = (id, callback) => {
     if (error) callback('{error: true}');
     else callback(body);
   });
-};
+}
 
-module.exports.sendImageVideoReport = (msg_data, sender, receiver) => {
+function sendImageVideoReport(msg_data, sender, receiver) {
   if (msg_data.sticker_id || !msg_data.mid) return;
   let type = 'ảnh';
   if (msg_data.attachments[0].type === 'video') type = 'video';
@@ -236,4 +235,16 @@ module.exports.sendImageVideoReport = (msg_data, sender, receiver) => {
       }
     }
   });
+}
+
+module.exports = {
+  persistent_menu: persistent_menu,
+  quickbtns: quickbtns,
+  setPersistentMenu: setPersistentMenu,
+  sendFacebookApi: sendFacebookApi,
+  sendTextMessage: sendTextMessage,
+  sendButtonMsg: sendButtonMsg,
+  sendSeenIndicator: sendSeenIndicator,
+  getUserData: getUserData,
+  sendImageVideoReport: sendImageVideoReport
 };
