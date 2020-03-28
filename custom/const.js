@@ -4,7 +4,7 @@ module.exports = {
 
   // HEROKU STUFFS
   APP_NAME : '',
-  HEROKU_API_KEY : '',
+  HEROKU_API_KEY : null,
 
   // MONGODB SETUP
   DB_CONFIG_URI : '',
