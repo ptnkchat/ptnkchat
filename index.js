@@ -350,8 +350,8 @@ async function initChatbot() {
   });
 
   app.post('/webhook/', (req, res) => {
-    let messaging_events = req.body.entry[0].messaging;
     res.sendStatus(200);
+    let messaging_events = req.body.entry[0].messaging;
     for (let i = 0; i < messaging_events.length; i++)
       processEvent(messaging_events[i]);
   });
