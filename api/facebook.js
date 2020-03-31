@@ -134,8 +134,8 @@ function sendFacebookApi(sender, receiver, messageData, dontSendErr = false) {
         console.log(`${sender} vs ${receiver} error: ${JSON.stringify(response.body.error)}`);
         if (response.body.error.code === 200 && sender !== receiver)
           sendFacebookApi(sender, sender, {text: la.ERR_200}, true);
-        else if (response.body.error.code === 230 && sender !== receiver)
-          sendFacebookApi(sender, sender, {text: la.ERR_230}, true);
+        else if (response.body.error.code === 10 && sender !== receiver)
+          sendFacebookApi(sender, sender, {text: la.ERR_10}, true);
         else if (co.HEROKU_API_KEY && response.body.error.code === 5)
           heroku.delete(`/apps/${co.APP_NAME}/dynos`, () => {});
       }
