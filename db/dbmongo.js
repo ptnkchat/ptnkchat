@@ -40,7 +40,7 @@ function dropDatabase(mongo) {
 
 function writeToWaitRoom(mongo, id, gender) {
   let d = new Date();
-  mongo.collection('waitroom').insertOne({uid: +id, gender: gender, time: d.getTime()}, (err) => {
+  mongo.collection('waitroom').updateOne({uid: +id}, {$set: {uid: +id, gender: gender, time: d.getTime()}}, {upsert: true}, (err) => {
     if (err) {
       console.log(`__writeToWaitRoom error: ${JSON.stringify(err)}`);
       setTimeout(() => writeToWaitRoom(mongo, id, gender), 1000);
@@ -93,12 +93,11 @@ function getListWaitRoom (mongo, callback) {
 function writeToChatRoom(mongo, id1, id2, gender1, gender2, isWantedGender) {
   let d = new Date();
   let genderint = (isWantedGender ? 1 : 0);
-  mongo.collection('chatroom').insertOne(
-    {id1: +id1, id2: +id2, starttime: d.getTime(), gender1: gender1, gender2: gender2, genderok: genderint}, (err) => {
-      if (err) {
-        console.log(`__writeToChatRoom error: ${JSON.stringify(err)}`);
-        setTimeout(() => writeToChatRoom(mongo, id1, id2, gender1, gender2, isWantedGender), 1000);
-      }
+  mongo.collection('chatroom').updateOne({id1: +id1, id2: +id2}, {$set: {id1: +id1, id2: +id2, starttime: d.getTime(), gender1: gender1, gender2: gender2, genderok: genderint}}, {upsert: true}, (err) => {
+    if (err) {
+      console.log(`__writeToChatRoom error: ${JSON.stringify(err)}`);
+      setTimeout(() => writeToChatRoom(mongo, id1, id2, gender1, gender2, isWantedGender), 1000);
+    }
   });
 }
 
@@ -161,8 +160,7 @@ function findLastTalk(mongo, id1, id2) {
 }
 
 function updateLastTalk(mongo, id1, id2) {
-  mongo.collection('lasttalk').updateOne({uid: id1}, {$set: {uid: id1, partner: id2}},
-    {upsert: true}, (err) => {
+  mongo.collection('lasttalk').updateOne({uid: +id1}, {$set: {uid: +id1, partner: +id2}}, {upsert: true}, (err) => {
     if (err) {
       console.log(`__updateLastTalk error: ${JSON.stringify(err)}`);
       setTimeout(() => updateLastTalk(mongo, id1, id2), 1000);
