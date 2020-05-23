@@ -1,0 +1,8 @@
+{
+  "name": "PTNK Chatible",
+  "description": "Chatible clone written in TypeScript, based on Node, Express and Mongo",
+  "repository": "https://github.com/ptnkchat/ptnkchat",
+  "keywords": ["chatible", "node", "express", "typescript", "mongo"],
+  "success_url": "/",
+  "website": "https://m.me/ptnkchat"
+}
