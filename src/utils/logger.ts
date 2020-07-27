@@ -49,7 +49,7 @@ const logPair = async (id1: string, id2: string): Promise<void> => {
 
   try {
     await phin({
-      url: 'https://docs.google.com/forms/d/e/${config.POST_LOG_ID}/formResponse',
+      url: `https://docs.google.com/forms/d/e/${config.POST_LOG_ID}/formResponse`,
       method: 'POST',
       data
     });
