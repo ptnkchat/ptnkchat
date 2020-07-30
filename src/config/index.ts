@@ -30,7 +30,7 @@ const parseEnvNumber = (key: string): number | undefined => {
  */
 const parseEnvBoolean = (key: string): boolean | undefined => {
   if (process.env[key]) {
-    String(process.env[key]).toLowerCase() === 'true';
+    return String(process.env[key]).toLowerCase() === 'true';
   } else {
     return undefined;
   }
