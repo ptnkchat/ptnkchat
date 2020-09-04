@@ -4,8 +4,6 @@
  * @packageDocumentation
  */
 
-import packageJSON from '../../package.json';
-
 /**
  * Parse string from environment variable
  * @param key - Environment key
@@ -120,5 +118,5 @@ export default {
   DEV_ID: parseEnvString('DEV_ID') || '',
 
   // Project version. You don't need to set this.
-  VERSION: packageJSON.version
+  VERSION: '5.0.0'
 } as ConfigProps;
