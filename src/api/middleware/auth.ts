@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import CryptoJS from 'crypto-js';
 import config from '../../config';
 import { AdminReplyProps } from '../../interfaces/AdminReplyProps';
@@ -11,7 +11,7 @@ const HASHED_PASS = CryptoJS.SHA256(config.ADMIN_PASSWORD).toString();
  * @param res - Express reponse
  * @param next - Next middleware
  */
-const authMiddleware = (req: Request, res: Response, next: Function): Response<AdminReplyProps> | void => {
+const authMiddleware = (req: Request, res: Response, next: NextFunction): Response<AdminReplyProps> | void => {
   const token = req.header('X-Auth-Token');
   if (!token) {
     return res.send({ error: true, errortype: 'auth' });

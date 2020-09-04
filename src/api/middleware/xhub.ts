@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import config from '../../config';
 import logger from '../../utils/logger';
 
-const verifyXHub = (req: Request, res: Response, next: Function): void => {
+const verifyXHub = (req: Request, res: Response, next: NextFunction): void => {
   if (config.APP_SECRET === '') {
     next();
     return;
