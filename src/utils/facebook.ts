@@ -31,35 +31,29 @@ const persistent_menu = [
     composer_input_disabled: false,
     call_to_actions: [
       {
-        title: 'chức năng',
-        type: 'nested',
-        call_to_actions: [
-          {
-            title: 'meow',
-            type: 'postback',
-            payload: lang.KEYWORD_CAT
-          },
-          {
-            title: 'gauw',
-            type: 'postback',
-            payload: lang.KEYWORD_DOG
-          },
-          {
-            title: 'tìm nam',
-            type: 'postback',
-            payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_MALE
-          },
-          {
-            title: 'tìm nữ',
-            type: 'postback',
-            payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_FEMALE
-          },
-          {
-            title: 'kết thúc',
-            type: 'postback',
-            payload: lang.KEYWORD_END
-          }
-        ]
+        title: 'meow',
+        type: 'postback',
+        payload: lang.KEYWORD_CAT
+      },
+      {
+        title: 'gauw',
+        type: 'postback',
+        payload: lang.KEYWORD_DOG
+      },
+      {
+        title: 'tìm nam',
+        type: 'postback',
+        payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_MALE
+      },
+      {
+        title: 'tìm nữ',
+        type: 'postback',
+        payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_FEMALE
+      },
+      {
+        title: 'kết thúc',
+        type: 'postback',
+        payload: lang.KEYWORD_END
       },
       {
         title: 'trợ giúp',
