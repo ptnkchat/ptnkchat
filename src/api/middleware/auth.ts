@@ -8,7 +8,7 @@ const HASHED_PASS = CryptoJS.SHA256(config.ADMIN_PASSWORD).toString();
 /**
  * Check authorization token in header `X-Auth-Token`
  * @param req - Express request
- * @param res - Express reponse
+ * @param res - Express response
  * @param next - Next middleware
  */
 const authMiddleware = (req: Request, res: Response, next: NextFunction): Response<AdminReplyProps> | void => {
