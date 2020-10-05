@@ -19,7 +19,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction): Respon
 
   try {
     const bytes = CryptoJS.AES.decrypt(token, HASHED_PASS);
-    const data = JSON.parse(bytes.toString());
+    const data = JSON.parse(bytes.ciphertext.toString(CryptoJS.enc.Utf8));
     const now = new Date();
 
     if (
