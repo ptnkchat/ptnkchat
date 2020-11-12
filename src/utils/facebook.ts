@@ -135,7 +135,7 @@ const setPersona = async (): Promise<void> => {
 
   const payload = {
     name: 'Đối chat',
-    profile_picture_url: 'https://ptnkchat.github.io/assets/ptnk_logo.jpeg'
+    profile_picture_url: config.PERSONA_PROFILE_PICTURE
   };
 
   try {

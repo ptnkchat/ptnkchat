@@ -44,6 +44,7 @@ export interface ConfigProps {
   PAGE_VERIFY_TOKEN: string;
   MAX_MESSAGE_LENGTH: number;
   APP_NAME: string;
+  PERSONA_PROFILE_PICTURE: string;
   HEROKU_API_KEY: string;
   MONGO_URI: string;
   HAS_POST_LOG: boolean;
@@ -82,6 +83,10 @@ export default {
 
   // App name (must be the same on Heroku)
   APP_NAME: parseEnvString('APP_NAME') || 'ptnkchat',
+
+  // Page persona profile picture
+  PERSONA_PROFILE_PICTURE:
+    parseEnvString('PERSONA_PROFILE_PICTURE') || 'https://ptnkchat.github.io/assets/ptnk_logo.jpeg',
 
   // Heroku API key
   HEROKU_API_KEY: parseEnvString('HEROKU_API_KEY') || '',
