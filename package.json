@@ -26,34 +26,33 @@
     "docs": "typedoc"
   },
   "dependencies": {
-    "async-mutex": "^0.2.4",
+    "async-mutex": "^0.2.6",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "heroku-client": "^3.1.0",
     "megahash": "^1.0.4",
-    "mongoose": "^5.10.13",
-    "phin": "^3.5.0",
+    "mongoose": "^5.11.8",
+    "phin": "^3.5.1",
     "pidusage": "^2.0.21"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.8",
+    "@types/cors": "^2.8.9",
     "@types/crypto-js": "^4.0.1",
     "@types/express": "^4.17.9",
-    "@types/mongoose": "^5.10.0",
-    "@types/node": "^14.14.7",
+    "@types/node": "^14.14.13",
     "@types/pidusage": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.7.0",
-    "@typescript-eslint/parser": "^4.7.0",
-    "eslint": "^7.13.0",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-tsdoc": "^0.2.7",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
+    "eslint": "^7.15.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-prettier": "^3.3.0",
+    "eslint-plugin-tsdoc": "^0.2.10",
     "nodemon": "^2.0.6",
-    "prettier": "^2.1.2",
-    "ts-node": "^9.0.0",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
     "typedoc": "^0.19.2",
-    "typescript": "^4.0.5"
+    "typescript": "^4.1.3"
   }
 }
