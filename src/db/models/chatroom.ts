@@ -6,29 +6,29 @@ const ChatRoomSchema: Schema = new Schema({
     type: String,
     required: true,
     unique: true,
-    index: true
+    index: true,
   },
   id2: {
     type: String,
     required: true,
     unique: true,
-    index: true
+    index: true,
   },
   gender1: {
     type: String,
     enum: Object.keys(GenderEnum),
-    required: true
+    required: true,
   },
   gender2: {
     type: String,
     enum: Object.keys(GenderEnum),
-    required: true
+    required: true,
   },
   time: {
     type: Date,
     required: true,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 export interface ChatRoomProps extends Document {

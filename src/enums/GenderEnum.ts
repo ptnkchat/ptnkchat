@@ -1,7 +1,7 @@
 enum GenderEnum {
   UNKNOWN = 'UNKNOWN',
   MALE = 'MALE',
-  FEMALE = 'FEMALE'
+  FEMALE = 'FEMALE',
 }
 
 export default GenderEnum;

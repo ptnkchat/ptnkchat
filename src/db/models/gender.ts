@@ -6,13 +6,13 @@ const GenderSchema: Schema = new Schema({
     type: String,
     required: true,
     unique: true,
-    index: true
+    index: true,
   },
   gender: {
     type: String,
     enum: Object.keys(GenderEnum),
-    required: true
-  }
+    required: true,
+  },
 });
 
 export interface GenderProp extends Document {

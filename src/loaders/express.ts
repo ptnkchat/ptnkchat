@@ -20,8 +20,8 @@ const expressLoader = async (app: express.Application): Promise<void> => {
     express.json({
       verify(req: IncomingMessage & { rawBody: Buffer }, res, buf) {
         req.rawBody = buf;
-      }
-    })
+      },
+    }),
   );
   app.use(express.urlencoded({ extended: false }));
 

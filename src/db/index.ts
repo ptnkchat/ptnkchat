@@ -119,11 +119,11 @@ const writeToChatRoom = async (
   id2: string,
   gender1: GenderEnum,
   gender2: GenderEnum,
-  time = new Date()
+  time = new Date(),
 ): Promise<void> => {
   await Promise.all([
     cache.chatRoomWrite(id1, id2, gender1, gender2, time),
-    mongo.chatRoomWrite(id1, id2, gender1, gender2, time)
+    mongo.chatRoomWrite(id1, id2, gender1, gender2, time),
   ]);
 };
 
@@ -208,5 +208,5 @@ export default {
   updateLastPerson,
   getListLastPerson,
 
-  resetDatabase
+  resetDatabase,
 };

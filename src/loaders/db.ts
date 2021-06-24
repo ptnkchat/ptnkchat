@@ -15,7 +15,7 @@ const _connect = async (mongoURI: string, shouldNotifyDev: boolean): Promise<boo
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
-      useFindAndModify: false
+      useFindAndModify: false,
     });
     console.log('[loader::_connect] Connected with MongoDB');
 

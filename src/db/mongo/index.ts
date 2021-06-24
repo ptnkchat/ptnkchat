@@ -78,7 +78,7 @@ const chatRoomWrite = async (
   id2: string,
   gender1: GenderEnum,
   gender2: GenderEnum,
-  time: Date
+  time: Date,
 ): Promise<void> => {
   const release = await mongoMutex.acquire();
   try {
@@ -161,5 +161,5 @@ export default {
   chatRoomWrite,
   chatRoomRemove,
   lastPersonWrite,
-  resetDatabase
+  resetDatabase,
 };

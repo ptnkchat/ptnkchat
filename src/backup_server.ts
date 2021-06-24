@@ -26,14 +26,14 @@ const sendTextMessage = async (receiver: string, text: string): Promise<void> =>
       recipient: { id: receiver },
       message: { text },
       messaging_type: 'MESSAGE_TAG',
-      tag: 'ACCOUNT_UPDATE'
+      tag: 'ACCOUNT_UPDATE',
     };
 
     const res = await phin({
       url: u(`/me/messages?access_token=${config.PAGE_ACCESS_TOKEN}`),
       method: 'POST',
       parse: 'json',
-      data: payload
+      data: payload,
     });
 
     const body: SendResponse = res.body as SendResponse;

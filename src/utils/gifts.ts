@@ -76,5 +76,5 @@ const sendDogPic = async (id1: string, id2: string | null): Promise<void> => {
 
 export default {
   sendCatPic,
-  sendDogPic
+  sendDogPic,
 };

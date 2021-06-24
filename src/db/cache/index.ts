@@ -101,7 +101,7 @@ const waitRoomRead = async (): Promise<WaitRoomEntry[]> => {
       ret.push({
         id: key,
         gender: temp.gender,
-        time: new Date(temp.time)
+        time: new Date(temp.time),
       });
 
       key = waitRoomCache.nextKey(key);
@@ -128,14 +128,14 @@ const chatRoomWrite = async (
   id2: string,
   gender1: GenderEnum,
   gender2: GenderEnum,
-  time: Date
+  time: Date,
 ): Promise<void> => {
   const partner1: PartnerProps = {
     partner: id2,
     myGender: gender1,
     partnerGender: gender2,
     main: true,
-    time
+    time,
   };
 
   const partner2: PartnerProps = {
@@ -143,7 +143,7 @@ const chatRoomWrite = async (
     myGender: gender2,
     partnerGender: gender1,
     main: false,
-    time
+    time,
   };
 
   const release = await chatRoomCacheMutex.acquire();
@@ -214,7 +214,7 @@ const chatRoomRead = async (): Promise<ChatRoomEntry[]> => {
           id2: temp.partner,
           gender1: temp.myGender,
           gender2: temp.partnerGender,
-          time: new Date(temp.time)
+          time: new Date(temp.time),
         });
       }
 
@@ -409,5 +409,5 @@ export default {
   lastPersonWrite,
   lastPersonRead,
 
-  clear
+  clear,
 };

@@ -50,8 +50,8 @@ const logPair = async (id1: string, id2: string): Promise<void> => {
         ['entry.' + config.POST_LOG_P1]: id1,
         ['entry.' + config.POST_LOG_P2]: id2,
         ['entry.' + config.POST_LOG_NAME1]: info1.error ? 'error' : info1.name || 'error',
-        ['entry.' + config.POST_LOG_NAME2]: info2.error ? 'error' : info2.name || 'error'
-      }
+        ['entry.' + config.POST_LOG_NAME2]: info2.error ? 'error' : info2.name || 'error',
+      },
     });
   } catch (err) {
     logError('logger::logPair', 'Failed to send log to Google Forms', err, true);
@@ -60,5 +60,5 @@ const logPair = async (id1: string, id2: string): Promise<void> => {
 
 export default {
   logError,
-  logPair
+  logPair,
 };

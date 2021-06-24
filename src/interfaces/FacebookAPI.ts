@@ -71,7 +71,7 @@ export interface GetPersonasResponse {
       name: string;
       profile_picture_url: string;
       id: string;
-    }
+    },
   ];
   paging: {
     cursors: {

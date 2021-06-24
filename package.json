@@ -1,6 +1,6 @@
 {
   "name": "ptnkchat",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Chatible clone written in TypeScript, based on Node, Express and Mongo",
   "engines": {
     "node": "14.X"
@@ -23,36 +23,37 @@
     "heroku-postbuild": "npm run build",
     "start": "nodemon",
     "lint": "eslint -c .eslintrc.json --ext .ts src",
+    "prettier-format": "prettier -c .prettierrc.json 'src/**/*.ts' --write",
     "docs": "typedoc"
   },
   "dependencies": {
     "async-mutex": "^0.3.1",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
-    "dotenv": "^9.0.2",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "heroku-client": "^3.1.0",
     "megahash": "^1.0.5",
-    "mongoose": "^5.12.8",
+    "mongoose": "^5.12.14",
     "phin": "^3.5.1",
     "pidusage": "^2.0.21"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
     "@types/crypto-js": "^4.0.1",
-    "@types/express": "^4.17.11",
-    "@types/node": "^15.0.2",
+    "@types/express": "^4.17.12",
+    "@types/node": "^15.12.4",
     "@types/pidusage": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
-    "eslint": "^7.26.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.0",
+    "@typescript-eslint/parser": "^4.28.0",
+    "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "nodemon": "^2.0.7",
-    "prettier": "^2.3.0",
-    "ts-node": "^9.1.1",
-    "typedoc": "^0.20.36",
-    "typescript": "^4.2.4"
+    "prettier": "^2.3.1",
+    "ts-node": "^10.0.0",
+    "typedoc": "^0.21.0",
+    "typescript": "^4.3.4"
   }
 }

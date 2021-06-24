@@ -6,18 +6,18 @@ const WaitRoomSchema: Schema = new Schema({
     type: String,
     required: true,
     unique: true,
-    index: true
+    index: true,
   },
   gender: {
     type: String,
     enum: Object.keys(GenderEnum),
-    required: true
+    required: true,
   },
   time: {
     type: Date,
     required: true,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 export interface WaitRoomProps extends Document {

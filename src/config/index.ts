@@ -44,6 +44,7 @@ export interface ConfigProps {
   PAGE_VERIFY_TOKEN: string;
   MAX_MESSAGE_LENGTH: number;
   APP_NAME: string;
+  APP_DISPLAY_NAME: string;
   PERSONA_PROFILE_PICTURE: string;
   HEROKU_API_KEY: string;
   MONGO_URI: string;
@@ -84,6 +85,9 @@ export default {
   // App name (must be the same on Heroku)
   APP_NAME: parseEnvString('APP_NAME') || 'ptnkchat',
 
+  // App display name
+  APP_DISPLAY_NAME: parseEnvString('APP_DISPLAY_NAME') || 'PTNK Chatible',
+
   // Page persona profile picture
   PERSONA_PROFILE_PICTURE:
     parseEnvString('PERSONA_PROFILE_PICTURE') || 'https://ptnkchat.github.io/assets/ptnk_logo.jpeg',
@@ -110,18 +114,18 @@ export default {
 
   // Maximum amount of time in wait room
   // 0 for unlimited
-  MAX_WAIT_TIME_MINUTES: parseEnvNumber('MAX_WAIT_TIME_MINUTES') || 60,
+  MAX_WAIT_TIME_MINUTES: parseEnvNumber('MAX_WAIT_TIME_MINUTES') || 0,
 
   // Password to log into admin page
   ADMIN_PASSWORD: parseEnvString('ADMIN_PASSWORD') || '',
 
   // Maximum amount of time of a session
   // 0 for unlimited
-  MAX_SESSION_MINUTES: parseEnvNumber('MAX_SESSION_MINUTES') || 30, // Thời gian 1 session
+  MAX_SESSION_MINUTES: parseEnvNumber('MAX_SESSION_MINUTES') || 30,
 
   // ID of developer's Facebook account
   DEV_ID: parseEnvString('DEV_ID') || '',
 
   // Project version. You don't need to set this.
-  VERSION: '5.0.0'
+  VERSION: '5.0.1',
 } as ConfigProps;

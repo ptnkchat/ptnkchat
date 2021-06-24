@@ -316,5 +316,5 @@ const removeTimeoutUser = async (): Promise<void> => {
 
 export default {
   processEvent,
-  removeTimeoutUser
+  removeTimeoutUser,
 };

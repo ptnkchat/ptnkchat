@@ -5,12 +5,12 @@ const LastPersonSchema: Schema = new Schema({
     type: String,
     required: true,
     unique: true,
-    index: true
+    index: true,
   },
   id2: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 export interface LastPersonProps extends Document {

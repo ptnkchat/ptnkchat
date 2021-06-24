@@ -43,7 +43,7 @@ const createBackup = async (): Promise<AdminReplyProps> => {
     chatRoom: chatRoomList,
     waitRoom: waitRoomList,
     gender: genderList,
-    lastPerson: lastPersonList
+    lastPerson: lastPersonList,
   };
 };
 
@@ -111,7 +111,7 @@ const readStats = async (): Promise<AdminReplyProps> => {
     error: false,
     cpu: `${stat.cpu.toFixed(1)}%`,
     mem: `${(stat.memory / 1024 / 1024).toFixed(1)}MB`,
-    uptime: `${0 < d ? d + ' day ' : ''}${h}h ${m}m ${sec}s`
+    uptime: `${0 < d ? d + ' day ' : ''}${h}h ${m}m ${sec}s`,
   };
 };
 
@@ -126,7 +126,7 @@ const forceMatch = async (
   id1: string,
   id2: string,
   gender1: GenderEnum,
-  gender2: GenderEnum
+  gender2: GenderEnum,
 ): Promise<AdminReplyProps> => {
   await db.removeFromWaitRoom(id1);
   await db.removeFromWaitRoom(id2);
@@ -185,5 +185,5 @@ export default {
   forceMatch,
   forceRemove,
   getUserData,
-  resetDatabase
+  resetDatabase,
 };

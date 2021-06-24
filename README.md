@@ -11,7 +11,7 @@ Demo: https://m.me/ptnkchat
 - Deploy to Heroku using the deploy button.
 - Create a cluster on MongoDB Atlas. Whitelist IP addresses.
 - Create an app on Facebook. Install Webhook. Get app secret and tokens.
-- Set Heroku's `Config Vars`. Check [here](src/config/index.ts) to know which variables you need to set.
+- Set Heroku's `Config Vars`. Check [.env.example](.env.example) to know which variables you need to set.
 - Enjoy!
 
 ## Features

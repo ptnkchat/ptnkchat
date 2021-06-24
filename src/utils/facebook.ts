@@ -16,7 +16,7 @@ import {
   MessengerProfileResponse,
   UserProfileResponse,
   GetPersonasResponse,
-  PostPersonasResponse
+  PostPersonasResponse,
 } from '../interfaces/FacebookAPI';
 
 const u = (path: string): string => config.GRAPH_API + path;
@@ -33,71 +33,71 @@ const persistent_menu = [
       {
         title: 'meow',
         type: 'postback',
-        payload: lang.KEYWORD_CAT
+        payload: lang.KEYWORD_CAT,
       },
       {
         title: 'gauw',
         type: 'postback',
-        payload: lang.KEYWORD_DOG
+        payload: lang.KEYWORD_DOG,
       },
       {
         title: 'tìm nam',
         type: 'postback',
-        payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_MALE
+        payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_MALE,
       },
       {
         title: 'tìm nữ',
         type: 'postback',
-        payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_FEMALE
+        payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_FEMALE,
       },
       {
         title: 'kết thúc',
         type: 'postback',
-        payload: lang.KEYWORD_END
+        payload: lang.KEYWORD_END,
       },
       {
         title: 'trợ giúp',
         type: 'postback',
-        payload: lang.KEYWORD_HELP
+        payload: lang.KEYWORD_HELP,
       },
       {
         title: 'gửi phản hồi',
         type: 'web_url',
-        url: config.REPORT_LINK
-      }
-    ]
-  }
+        url: config.REPORT_LINK,
+      },
+    ],
+  },
 ];
 
 const quick_buttons_generic: Array<SendQuickReply> = [
   {
     content_type: 'text',
     title: 'meow',
-    payload: lang.KEYWORD_CAT
+    payload: lang.KEYWORD_CAT,
   },
   {
     content_type: 'text',
     title: 'gauw',
-    payload: lang.KEYWORD_DOG
+    payload: lang.KEYWORD_DOG,
   },
   {
     content_type: 'text',
     title: 'trợ giúp',
-    payload: lang.KEYWORD_HELP
-  }
+    payload: lang.KEYWORD_HELP,
+  },
 ];
 
 const quick_buttons_genders: Array<SendQuickReply> = [
   {
     content_type: 'text',
     title: 'tìm nam',
-    payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_MALE
+    payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_MALE,
   },
   {
     content_type: 'text',
     title: 'tìm nữ',
-    payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_FEMALE
-  }
+    payload: lang.KEYWORD_GENDER + lang.KEYWORD_GENDER_FEMALE,
+  },
 ];
 
 const setPersona = async (): Promise<void> => {
@@ -108,7 +108,7 @@ const setPersona = async (): Promise<void> => {
     const res = await phin({
       url: u(`/me/personas?access_token=${config.PAGE_ACCESS_TOKEN}`),
       method: 'get',
-      parse: 'json'
+      parse: 'json',
     });
 
     const body: GetPersonasResponse = res.body as GetPersonasResponse;
@@ -135,7 +135,7 @@ const setPersona = async (): Promise<void> => {
 
   const payload = {
     name: 'Đối chat',
-    profile_picture_url: config.PERSONA_PROFILE_PICTURE
+    profile_picture_url: config.PERSONA_PROFILE_PICTURE,
   };
 
   try {
@@ -143,7 +143,7 @@ const setPersona = async (): Promise<void> => {
       url: u(`/me/personas?access_token=${config.PAGE_ACCESS_TOKEN}`),
       method: 'POST',
       parse: 'json',
-      data: payload
+      data: payload,
     });
 
     const body: PostPersonasResponse = res.body as PostPersonasResponse;
@@ -166,9 +166,9 @@ const setPersona = async (): Promise<void> => {
 const setMessengerProfile = async (): Promise<void> => {
   const payload = {
     get_started: {
-      payload: 'ʬ'
+      payload: 'ʬ',
     },
-    persistent_menu
+    persistent_menu,
   };
 
   try {
@@ -176,7 +176,7 @@ const setMessengerProfile = async (): Promise<void> => {
       url: u(`/me/messenger_profile?access_token=${config.PAGE_ACCESS_TOKEN}`),
       method: 'POST',
       parse: 'json',
-      data: payload
+      data: payload,
     });
 
     const body: MessengerProfileResponse = res.body as MessengerProfileResponse;
@@ -202,7 +202,7 @@ const sendMessage = async (
   receiver: string,
   messageData: SendMessageObject,
   usePersona: boolean,
-  origSender = ''
+  origSender = '',
 ): Promise<void> => {
   if (messageData.text || messageData.attachment) {
     if (messageData.text && messageData.text.length > config.MAX_MESSAGE_LENGTH) {
@@ -216,7 +216,7 @@ const sendMessage = async (
       recipient: { id: receiver },
       message: messageData,
       messaging_type: 'MESSAGE_TAG',
-      tag: 'ACCOUNT_UPDATE'
+      tag: 'ACCOUNT_UPDATE',
     };
 
     if (usePersona && personaID !== '') {
@@ -228,7 +228,7 @@ const sendMessage = async (
         url: u(`/me/messages?access_token=${config.PAGE_ACCESS_TOKEN}`),
         method: 'POST',
         parse: 'json',
-        data: payload
+        data: payload,
       });
 
       const body: SendResponse = res.body as SendResponse;
@@ -237,7 +237,7 @@ const sendMessage = async (
         logger.logError(
           'facebook::sendMessage',
           `${origSender === '' ? 'bot' : origSender} to ${receiver} failed`,
-          body
+          body,
         );
 
         const errorCode = body.error.code;
@@ -281,7 +281,7 @@ const sendAttachment = async (
   url: string,
   showGenericButton: boolean,
   showGenderButton: boolean,
-  usePersona: boolean
+  usePersona: boolean,
 ): Promise<void> => {
   let quick_replies: Array<SendQuickReply> = [];
   if (showGenericButton) {
@@ -294,8 +294,8 @@ const sendAttachment = async (
   const message: SendMessageObject = {
     attachment: {
       type,
-      payload: { url }
-    }
+      payload: { url },
+    },
   };
 
   if (showGenericButton || showGenderButton) {
@@ -333,7 +333,7 @@ const sendTextButtons = async (
   showReportButton: boolean,
   showGenericButton: boolean,
   showGenderButton: boolean,
-  usePersona: boolean
+  usePersona: boolean,
 ): Promise<void> => {
   const buttons = [];
 
@@ -365,8 +365,8 @@ const sendTextButtons = async (
       payload: {
         template_type: 'button',
         text,
-        buttons
-      }
+        buttons,
+      },
     };
   } else {
     messageData.text = text;
@@ -384,7 +384,7 @@ const sendSeenIndicator = async (receiver: string): Promise<void> => {
     recipient: { id: receiver },
     sender_action: 'mark_seen',
     messaging_type: 'MESSAGE_TAG',
-    tag: 'ACCOUNT_UPDATE'
+    tag: 'ACCOUNT_UPDATE',
   };
 
   try {
@@ -392,7 +392,7 @@ const sendSeenIndicator = async (receiver: string): Promise<void> => {
       url: u(`/me/messages?access_token=${config.PAGE_ACCESS_TOKEN}`),
       method: 'POST',
       parse: 'json',
-      data: payload
+      data: payload,
     });
   } catch (err) {
     logger.logError('facebook::sendSeenIndicator', 'Failed to send request to Facebook', err, true);
@@ -408,7 +408,7 @@ const getUserData = async (id: string): Promise<UserProfileResponse> => {
     const res = await phin({
       url: u(`/${id}?access_token=${config.PAGE_ACCESS_TOKEN}&fields=name,first_name,last_name,profile_pic,gender`),
       method: 'GET',
-      parse: 'json'
+      parse: 'json',
     });
 
     return res.body as UserProfileResponse;
@@ -425,5 +425,5 @@ export default {
   sendTextMessage,
   sendTextButtons,
   sendSeenIndicator,
-  getUserData
+  getUserData,
 };
