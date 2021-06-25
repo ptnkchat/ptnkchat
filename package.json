@@ -1,6 +1,6 @@
 {
   "name": "ptnkchat",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Chatible clone written in TypeScript, based on Node, Express and Mongo",
   "engines": {
     "node": "14.X"

@@ -1,9 +1,9 @@
-import APP_DISPLAY_NAME from '../config';
+import config from '../config';
 
 export default {
   MAINTENANCE: '[BOT] Server hiện đang bảo trì...',
 
-  FIRST_COME: '[BOT] Chào mừng bạn đến với ' + APP_DISPLAY_NAME + '. Trước khi bắt đầu, hãy chắc chắn rằng bạn đã chọn đúng giới tính người muốn chat cùng.\n\nẤn trợ giúp (hoặc gửi trogiup) để xem thêm.',
+  FIRST_COME: '[BOT] Chào mừng bạn đến với ' + config.APP_DISPLAY_NAME + '. Trước khi bắt đầu, hãy chắc chắn rằng bạn đã chọn đúng giới tính người muốn chat cùng.\n\nẤn trợ giúp (hoặc gửi trogiup) để xem thêm.',
 
   INSTRUCTION: '[BOT] Gửi batdau hoặc bấm vào nút để tìm bạn chat.',
 

@@ -3,6 +3,7 @@
  * @packageDocumentation
  */
 
+import config from '../config';
 import Chatible from '../services/chatible';
 
 /**
@@ -10,7 +11,9 @@ import Chatible from '../services/chatible';
  * Remove timeout users from wait room.
  */
 const cronjobLoader = async (): Promise<void> => {
-  setInterval(Chatible.removeTimeoutUser, 60000);
+  if (config.MAX_WAIT_TIME_MINUTES > 0) {
+    setInterval(Chatible.removeTimeoutUser, 60000);
+  }
 };
 
 export default cronjobLoader;

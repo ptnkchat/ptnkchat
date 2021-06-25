@@ -127,5 +127,5 @@ export default {
   DEV_ID: parseEnvString('DEV_ID') || '',
 
   // Project version. You don't need to set this.
-  VERSION: '5.0.1',
+  VERSION: '5.0.2',
 } as ConfigProps;
