@@ -31,7 +31,7 @@
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "heroku-client": "^3.1.0",
     "megahash": "^1.0.5",
     "mongoose": "^5.12.14",
